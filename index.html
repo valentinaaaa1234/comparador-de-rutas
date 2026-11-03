@@ -8,101 +8,120 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
 :root{
-  --bg:#f1f4f3; --surface:#ffffff; --surface-2:#e9eeed;
-  --ink:#15201f; --ink-2:#596765; --ink-3:#879593;
-  --line:#d6dedc; --line-2:#c2cdca;
-  --accent:#0f6b64;
-  --route-a:#a0562a; --route-b:#2d5c8f;
-  --good:#2b6a4a; --good-soft:#dfefe6;
-  --warn:#8a5704; --warn-soft:#f8ecd6;
-  --bad:#9a3232; --bad-soft:#f7e3e3;
+  color-scheme: light;
+  --bg:#f5f7f6; --surface:#ffffff; --surface-2:#eef2f0; --surface-3:#e4eae7;
+  --ink:#1b2422; --ink-2:#5c6a67; --ink-3:#8a9794;
+  --line:#e0e6e4; --line-2:#cbd5d1;
+  --accent:#0f7a6e; --accent-soft:#e2f1ef;
+  --route-a:#c2662c; --route-a-soft:#fbefe4;
+  --route-b:#2f6bb0; --route-b-soft:#e6eff8;
+  --good:#2e7d52; --good-soft:#e4f3ea;
+  --warn:#96630a; --warn-soft:#fcf1da;
+  --bad:#a63a3a; --bad-soft:#fbeaea;
   --display:"Archivo","Helvetica Neue",Arial,sans-serif;
   --body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
   --mono:"IBM Plex Mono","SFMono-Regular",Consolas,monospace;
 }
-@media (prefers-color-scheme:dark){
-  :root{
-    --bg:#111716; --surface:#19211f; --surface-2:#222b29;
-    --ink:#e9edec; --ink-2:#9daba8; --ink-3:#7a8885;
-    --line:#2b3533; --line-2:#3a4644;
-    --accent:#4fb3a8;
-    --route-a:#d99a68; --route-b:#85acdc;
-    --good:#72c293; --good-soft:#17271f;
-    --warn:#e3b055; --warn-soft:#2a2214;
-    --bad:#e08080; --bad-soft:#2b1a1a;
-    color-scheme:dark;
-  }
-}
 *{box-sizing:border-box}
 html,body{margin:0}
 body{background:var(--bg); color:var(--ink); font-family:var(--body); font-size:15px; line-height:1.55}
-.wrap{max-width:1060px; margin:0 auto; padding:0 16px 56px}
-h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
+.wrap{max-width:1140px; margin:0 auto; padding:0 20px 60px}
+h1,h2,h3{font-family:var(--display); margin:0; text-wrap:balance}
 .num{font-family:var(--mono); font-variant-numeric:tabular-nums}
 
-header.top{padding:38px 0 26px; border-bottom:1px solid var(--line)}
-h1{font-size:clamp(25px,5vw,36px); font-weight:700; letter-spacing:-.02em; line-height:1.1}
-.sub{color:var(--ink-2); max-width:62ch; margin-top:10px}
+/* barra superior */
+.barra{background:var(--surface); border-bottom:1px solid var(--line)}
+.barra-in{max-width:1140px; margin:0 auto; padding:18px 20px; display:flex; align-items:center; gap:14px; flex-wrap:wrap}
+.marca{display:flex; align-items:center; gap:11px}
+.marca-ico{width:34px; height:34px; border-radius:8px; background:var(--accent-soft); flex:none;
+  display:flex; align-items:center; justify-content:center}
+.marca-ico svg{width:20px; height:20px}
+.marca h1{font-size:18px; font-weight:700; letter-spacing:-.01em; line-height:1.2}
+.marca p{margin:0; font-size:12.5px; color:var(--ink-3)}
+.barra-tag{margin-left:auto; font-size:11.5px; font-weight:600; letter-spacing:.05em; text-transform:uppercase;
+  color:var(--accent); background:var(--accent-soft); padding:5px 10px; border-radius:20px}
 
-section.etapa{padding:32px 0; border-bottom:1px solid var(--line)}
-.etapa-head{display:flex; align-items:baseline; gap:12px; margin-bottom:6px}
-.etapa-n{font-family:var(--mono); font-size:12px; font-weight:600; color:var(--accent);
-  border:1px solid var(--accent); border-radius:3px; padding:1px 6px; flex:none}
-h2{font-size:19px; font-weight:600; letter-spacing:-.01em}
-.etapa-sub{color:var(--ink-2); font-size:14px; margin:0 0 20px; max-width:66ch}
+/* planificador + mapa */
+.planner{display:grid; grid-template-columns:minmax(0,370px) minmax(0,1fr); gap:20px; margin-top:24px; align-items:start}
+@media (max-width:860px){ .planner{grid-template-columns:minmax(0,1fr)} }
 
-.fila{display:flex; flex-wrap:wrap; gap:16px; margin-bottom:18px}
-.campo{display:flex; flex-direction:column; gap:5px; min-width:0; flex:1 1 200px; position:relative}
-label{font-size:12px; font-weight:600; letter-spacing:.03em; color:var(--ink-2); text-transform:uppercase}
-select,input[type=number],input[type=text]{
+.panel{background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:18px; min-width:0}
+.panel h2{font-size:15px; font-weight:600; margin-bottom:14px}
+
+/* campos origen-destino con marcadores */
+.od{position:relative; display:flex; flex-direction:column; gap:12px; margin-bottom:6px}
+.od-fila{display:grid; grid-template-columns:22px minmax(0,1fr); gap:10px; align-items:center; position:relative}
+.od-pin{width:22px; display:flex; justify-content:center}
+.pin{width:15px; height:15px; border-radius:50%; border:3.5px solid var(--route-a); background:var(--surface)}
+.pin.dest{border-color:var(--route-b); border-radius:3px}
+.od-linea{position:absolute; left:10.5px; top:30px; bottom:30px; width:1.5px; background:var(--line-2)}
+
+label{font-size:11.5px; font-weight:600; letter-spacing:.04em; color:var(--ink-2); text-transform:uppercase; display:block; margin-bottom:4px}
+input[type=text],input[type=number],select{
   font-family:var(--body); font-size:15px; color:var(--ink); background:var(--surface);
-  border:1px solid var(--line-2); border-radius:4px; padding:8px 10px; width:100%; min-width:0}
+  border:1px solid var(--line-2); border-radius:7px; padding:9px 11px; width:100%; min-width:0}
 input[type=number]{font-family:var(--mono); font-variant-numeric:tabular-nums}
-select:focus-visible,input:focus-visible,button:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
 input[type=range]{width:100%; accent-color:var(--accent)}
 .slider-row{display:flex; align-items:center; gap:12px}
-.slider-val{font-family:var(--mono); font-size:15px; font-weight:600; min-width:62px; text-align:right; flex:none}
-.hint{font-size:12.5px; color:var(--ink-3)}
+.slider-val{font-family:var(--mono); font-size:14px; font-weight:600; min-width:54px; text-align:right; flex:none}
+.hint{font-size:12px; color:var(--ink-3); display:block; margin-top:4px}
 .error{font-size:13px; color:var(--bad); font-weight:500}
 
 button.accion{font-family:var(--body); font-size:15px; font-weight:600; color:#fff; background:var(--accent);
-  border:none; border-radius:4px; padding:10px 20px; cursor:pointer}
+  border:none; border-radius:7px; padding:11px 18px; cursor:pointer; width:100%; margin-top:14px}
 button.accion:disabled{opacity:.45; cursor:default}
-button.accion:hover:not(:disabled){filter:brightness(1.08)}
+button.accion:hover:not(:disabled){filter:brightness(1.09)}
 
-.sugerencias{position:absolute; top:100%; left:0; right:0; z-index:900; background:var(--surface);
-  border:1px solid var(--line-2); border-radius:4px; margin-top:3px; max-height:230px; overflow-y:auto;
-  box-shadow:0 6px 18px rgba(0,0,0,.12)}
+.sugerencias{position:absolute; top:100%; left:0; right:0; z-index:1200; background:var(--surface);
+  border:1px solid var(--line-2); border-radius:7px; margin-top:4px; max-height:250px; overflow-y:auto;
+  box-shadow:0 8px 22px rgba(20,40,35,.14)}
 .sugerencias button{display:block; width:100%; text-align:left; background:none; border:none;
-  padding:9px 11px; font-family:var(--body); font-size:14px; color:var(--ink); cursor:pointer;
-  border-bottom:1px solid var(--line)}
+  padding:9px 12px; font-family:var(--body); font-size:13.5px; color:var(--ink); cursor:pointer;
+  border-bottom:1px solid var(--line); line-height:1.4}
 .sugerencias button:last-child{border-bottom:none}
 .sugerencias button:hover,.sugerencias button:focus{background:var(--surface-2)}
+.sugerencias button b{font-weight:600; display:block}
+.sugerencias button span{color:var(--ink-3); font-size:12.5px}
 
-#mapa{height:380px; border-radius:6px; border:1px solid var(--line); margin-top:4px; background:var(--surface-2)}
-.leyenda{display:flex; flex-wrap:wrap; gap:16px; margin-top:12px; font-size:13px; color:var(--ink-2)}
+.sep{height:1px; background:var(--line); margin:16px 0}
+
+#mapa{height:452px; border-radius:10px; border:1px solid var(--line); background:var(--surface-2)}
+@media (max-width:860px){ #mapa{height:320px} }
+.leyenda{display:flex; flex-wrap:wrap; gap:16px; margin-top:10px; font-size:12.5px; color:var(--ink-2)}
 .leyenda span{display:flex; align-items:center; gap:7px}
 .swatch{width:18px; height:3px; border-radius:2px; flex:none}
 .sw-a{background:var(--route-a)} .sw-b{background:var(--route-b)}
 
-.rutas{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px}
-.ruta{background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:16px; min-width:0}
-.ruta.a{border-top:3px solid var(--route-a)}
-.ruta.b{border-top:3px solid var(--route-b)}
-.ruta-tit{display:flex; align-items:center; gap:8px; margin-bottom:14px}
-.dot{width:9px; height:9px; border-radius:50%; flex:none}
-.dot.a{background:var(--route-a)} .dot.b{background:var(--route-b)}
-.ruta-tit strong{font-family:var(--display); font-size:15px; font-weight:600}
-.ruta-tit em{font-size:12px; color:var(--ink-3); margin-left:auto; font-style:normal; font-weight:500}
-.ruta .campo{flex:1 1 100%}
-.ruta .fila{gap:12px; margin-bottom:12px}
-.ruta .fila:last-child{margin-bottom:0}
+.aviso{border-radius:8px; padding:12px 14px; font-size:13.5px; border:1px solid; margin-top:14px}
+.aviso.err{background:var(--bad-soft); border-color:var(--bad); color:var(--bad)}
 
-.tabla-box{overflow-x:auto; border:1px solid var(--line); border-radius:6px; background:var(--surface)}
-table{border-collapse:collapse; width:100%; min-width:460px}
-th,td{padding:10px 14px; text-align:right; border-bottom:1px solid var(--line); font-size:14px}
+/* secciones */
+section.bloque{margin-top:34px}
+.bloque-head{display:flex; align-items:baseline; gap:11px; margin-bottom:5px}
+.bloque-n{font-family:var(--mono); font-size:11.5px; font-weight:600; color:var(--accent);
+  background:var(--accent-soft); border-radius:4px; padding:2px 7px; flex:none}
+h2{font-size:18px; font-weight:600; letter-spacing:-.01em}
+.bloque-sub{color:var(--ink-2); font-size:14px; margin:0 0 18px; max-width:68ch}
+
+/* tarjetas de ruta */
+.rutas{display:grid; grid-template-columns:repeat(auto-fit,minmax(270px,1fr)); gap:16px}
+.ruta{background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:16px; min-width:0}
+.ruta.a{border-left:4px solid var(--route-a)}
+.ruta.b{border-left:4px solid var(--route-b)}
+.ruta-tit{display:flex; align-items:center; gap:9px; margin-bottom:14px}
+.chip{font-size:11px; font-weight:700; letter-spacing:.06em; padding:3px 8px; border-radius:4px; flex:none}
+.chip.a{background:var(--route-a-soft); color:var(--route-a)}
+.chip.b{background:var(--route-b-soft); color:var(--route-b)}
+.ruta-tit strong{font-family:var(--display); font-size:14.5px; font-weight:600; min-width:0; overflow-wrap:anywhere}
+.ruta-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(110px,1fr)); gap:12px}
+
+/* tabla */
+.tabla-box{overflow-x:auto; border:1px solid var(--line); border-radius:10px; background:var(--surface)}
+table{border-collapse:collapse; width:100%; min-width:480px}
+th,td{padding:11px 15px; text-align:right; border-bottom:1px solid var(--line); font-size:14px}
 th:first-child,td:first-child{text-align:left}
-thead th{font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-2);
+thead th{font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-2);
   font-weight:600; background:var(--surface-2)}
 thead th.ca{color:var(--route-a)} thead th.cb{color:var(--route-b)}
 tbody tr:last-child td{border-bottom:none}
@@ -110,24 +129,29 @@ tbody td:not(:first-child){font-family:var(--mono); font-variant-numeric:tabular
 td.mejor{font-weight:600}
 .unidad{color:var(--ink-3); font-size:12px; font-weight:400}
 
-.barras{margin-top:20px; display:flex; flex-direction:column; gap:16px}
-.bgrupo-tit{font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-2); margin-bottom:7px}
-.brow{display:grid; grid-template-columns:28px 1fr auto; align-items:center; gap:10px; margin-bottom:5px}
-.blabel{font-family:var(--mono); font-size:11.5px; font-weight:600; color:var(--ink-3)}
-.btrack{background:var(--surface-2); border-radius:2px; height:16px; overflow:hidden; min-width:0}
-.bfill{height:100%; border-radius:2px; transition:width .25s ease}
+/* barras */
+.barras{margin-top:20px; display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:20px}
+.bgrupo{background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:14px 16px; min-width:0}
+.bgrupo-tit{font-size:11.5px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-2); margin-bottom:10px}
+.brow{display:grid; grid-template-columns:20px 1fr auto; align-items:center; gap:9px; margin-bottom:7px}
+.brow:last-child{margin-bottom:0}
+.blabel{font-family:var(--mono); font-size:11px; font-weight:600; color:var(--ink-3)}
+.btrack{background:var(--surface-3); border-radius:3px; height:15px; overflow:hidden; min-width:0}
+.bfill{height:100%; border-radius:3px; transition:width .25s ease}
 .bfill.a{background:var(--route-a)} .bfill.b{background:var(--route-b)}
-.bval{font-family:var(--mono); font-size:12.5px; font-variant-numeric:tabular-nums; color:var(--ink-2); min-width:78px; text-align:right}
+.bval{font-family:var(--mono); font-size:12px; font-variant-numeric:tabular-nums; color:var(--ink-2); min-width:76px; text-align:right}
 
-.kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:14px}
-.kpi{background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:14px 16px; min-width:0}
-.kpi-lab{font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-2); font-weight:600}
-.kpi-val{font-family:var(--mono); font-size:26px; font-weight:600; letter-spacing:-.02em; margin-top:6px; line-height:1.1}
+/* indicadores */
+.kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(175px,1fr)); gap:14px}
+.kpi{background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:15px 16px; min-width:0}
+.kpi-lab{font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-2); font-weight:600}
+.kpi-val{font-family:var(--mono); font-size:25px; font-weight:600; letter-spacing:-.02em; margin-top:6px; line-height:1.1}
 .kpi-val.pos{color:var(--good)} .kpi-val.neg{color:var(--bad)}
 .kpi-pie{font-size:12.5px; color:var(--ink-3); margin-top:4px}
-.kpi-form{font-family:var(--mono); font-size:11px; color:var(--ink-3); margin-top:9px; padding-top:8px; border-top:1px solid var(--line)}
+.kpi-form{font-family:var(--mono); font-size:10.5px; color:var(--ink-3); margin-top:9px; padding-top:8px; border-top:1px solid var(--line)}
 
-.veredicto{border-radius:6px; padding:18px 20px; border:1px solid}
+/* recomendación */
+.veredicto{border-radius:10px; padding:18px 20px; border:1px solid}
 .veredicto.ok{background:var(--good-soft); border-color:var(--good)}
 .veredicto.alerta{background:var(--warn-soft); border-color:var(--warn)}
 .ver-tit{font-family:var(--display); font-size:19px; font-weight:700; letter-spacing:-.01em}
@@ -135,82 +159,83 @@ td.mejor{font-weight:600}
 .ver-txt{margin-top:7px; font-size:14.5px}
 .ver-extra{margin-top:11px; padding-top:11px; border-top:1px solid; font-size:13.5px}
 .veredicto.ok .ver-extra{border-color:var(--good)} .veredicto.alerta .ver-extra{border-color:var(--warn)}
-.pesos{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin-top:20px}
+.pesos{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:18px; margin-top:20px}
 .indice{display:flex; flex-wrap:wrap; gap:10px; margin-top:16px}
-.ipill{font-family:var(--mono); font-size:13px; padding:6px 11px; border-radius:4px;
-  background:var(--surface-2); border:1px solid var(--line)}
+.ipill{font-family:var(--mono); font-size:12.5px; padding:6px 11px; border-radius:6px;
+  background:var(--surface); border:1px solid var(--line)}
 .ipill b{font-weight:600}
 
-details.params{border:1px solid var(--line); border-radius:6px; background:var(--surface); margin-top:26px}
-details.params summary{padding:13px 16px; cursor:pointer; font-family:var(--display); font-weight:600;
-  font-size:15px; list-style:none; display:flex; align-items:center; gap:9px}
+details.params{border:1px solid var(--line); border-radius:10px; background:var(--surface); margin-top:24px}
+details.params summary{padding:14px 16px; cursor:pointer; font-family:var(--display); font-weight:600;
+  font-size:14.5px; list-style:none; display:flex; align-items:center; gap:9px}
 details.params summary::-webkit-details-marker{display:none}
 details.params summary::before{content:"+"; font-family:var(--mono); color:var(--accent); font-weight:600}
 details.params[open] summary::before{content:"−"}
 .params-body{padding:0 16px 18px; border-top:1px solid var(--line)}
-.params-body .fila{margin-top:16px}
+.params-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:16px; margin-top:16px}
 .fuente{font-size:12.5px; color:var(--ink-3); margin-top:14px; padding-left:11px; border-left:2px solid var(--line-2)}
 .fuente b{color:var(--ink-2); font-weight:600}
 
-.aviso{border-radius:6px; padding:14px 16px; font-size:13.5px; border:1px solid; margin-top:16px}
-.aviso.info{background:var(--surface); border-color:var(--line-2); color:var(--ink-2)}
-.aviso.err{background:var(--bad-soft); border-color:var(--bad); color:var(--bad)}
-.aviso a{color:var(--accent)}
-
-footer{padding:28px 0; color:var(--ink-3); font-size:13px}
-footer p{margin:0 0 7px}
-.formulas{font-family:var(--mono); font-size:12px; color:var(--ink-2); margin-top:12px; line-height:1.9}
+footer{margin-top:40px; padding-top:22px; border-top:1px solid var(--line); color:var(--ink-3); font-size:12.5px}
+footer p{margin:0 0 6px}
+.formulas{font-family:var(--mono); font-size:11.5px; color:var(--ink-2); margin-top:12px; line-height:1.9}
 @media (prefers-reduced-motion:reduce){.bfill{transition:none}}
 </style>
 </head>
 <body>
+
+<div class="barra">
+  <div class="barra-in">
+    <div class="marca">
+      <span class="marca-ico" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0f7a6e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="6" cy="19" r="2.4"></circle><circle cx="18" cy="5" r="2.4"></circle>
+          <path d="M8.4 19h5.1a3.5 3.5 0 0 0 0-7h-3a3.5 3.5 0 0 1 0-7h5.1"></path>
+        </svg>
+      </span>
+      <div>
+        <h1>Comparador de rutas logísticas</h1>
+        <p>Distancia, combustible, emisiones y costo de dos alternativas de transporte</p>
+      </div>
+    </div>
+    <span class="barra-tag">Prototipo</span>
+  </div>
+</div>
+
 <div class="wrap">
 
-<header class="top">
-  <h1>Comparador de rutas logísticas</h1>
-  <p class="sub">Compara dos alternativas de transporte entre un origen y un destino según distancia, consumo de combustible, carga, tiempo y emisiones, y recomienda una ruta mostrando su efecto operacional y económico.</p>
-</header>
+<div class="planner">
+  <div class="panel">
+    <h2>Planificar comparación</h2>
 
-<!-- ETAPA 1 -->
-<section class="etapa">
-  <div class="etapa-head"><span class="etapa-n">01</span><h2>Ingreso de datos</h2></div>
-  <p class="etapa-sub">Escribe el origen y el destino. El buscador sugiere lugares reales dentro de Chile y el servicio de rutas devuelve la ruta principal y una alternativa, con su distancia y su tiempo sobre la red vial real.</p>
-
-  <div class="fila">
-    <div class="campo">
-      <label for="origen">Origen</label>
-      <input type="text" id="origen" placeholder="Ej. Puerto de Antofagasta" autocomplete="off">
-      <div class="sugerencias" id="sug-origen" hidden></div>
-      <span class="hint" id="hint-origen">Escribe al menos 3 letras.</span>
+    <div class="od">
+      <div class="od-linea" aria-hidden="true"></div>
+      <div class="od-fila">
+        <span class="od-pin"><span class="pin"></span></span>
+        <div style="position:relative; min-width:0">
+          <label for="origen">Origen</label>
+          <input type="text" id="origen" placeholder="Antofagasta" autocomplete="off">
+          <div class="sugerencias" id="sug-origen" hidden></div>
+        </div>
+      </div>
+      <div class="od-fila">
+        <span class="od-pin"><span class="pin dest"></span></span>
+        <div style="position:relative; min-width:0">
+          <label for="destino">Destino</label>
+          <input type="text" id="destino" placeholder="Calama" autocomplete="off">
+          <div class="sugerencias" id="sug-destino" hidden></div>
+        </div>
+      </div>
     </div>
-    <div class="campo">
-      <label for="destino">Destino</label>
-      <input type="text" id="destino" placeholder="Ej. Calama" autocomplete="off">
-      <div class="sugerencias" id="sug-destino" hidden></div>
-      <span class="hint" id="hint-destino">Escribe al menos 3 letras.</span>
-    </div>
-  </div>
+    <span class="hint" id="hint-busqueda">Escribe y elige una sugerencia de la lista.</span>
 
-  <div class="fila">
-    <div class="campo" style="flex:0 0 auto">
-      <button class="accion" id="btn-calcular" type="button" disabled>Calcular rutas</button>
-    </div>
-  </div>
+    <div class="sep"></div>
 
-  <div class="aviso err" id="error-api" hidden></div>
-
-  <div id="mapa"></div>
-  <div class="leyenda">
-    <span><i class="swatch sw-a"></i> Ruta A · referencia</span>
-    <span><i class="swatch sw-b"></i> Ruta B · alternativa</span>
-  </div>
-
-  <div class="fila" style="margin-top:24px">
-    <div class="campo">
+    <div style="margin-bottom:14px">
       <label for="veh">Vehículo</label>
       <select id="veh"></select>
     </div>
-    <div class="campo">
+    <div>
       <label for="carga">Carga transportada</label>
       <div class="slider-row">
         <input type="range" id="carga" min="1" max="28" step="1" value="12">
@@ -218,38 +243,47 @@ footer p{margin:0 0 7px}
       </div>
       <span class="hint" id="carga-hint"></span>
     </div>
+
+    <button class="accion" id="btn-calcular" type="button" disabled>Calcular rutas</button>
   </div>
 
+  <div style="min-width:0">
+    <div id="mapa"></div>
+    <div class="leyenda">
+      <span><i class="swatch sw-a"></i> Ruta A · referencia</span>
+      <span><i class="swatch sw-b"></i> Ruta B · alternativa</span>
+    </div>
+    <div class="aviso err" id="error-api" hidden></div>
+  </div>
+</div>
+
+<section class="bloque">
+  <div class="bloque-head"><span class="bloque-n">01</span><h2>Datos de cada ruta</h2></div>
+  <p class="bloque-sub">El servicio entrega distancia y tiempo sobre la red vial real. Los peajes se ingresan a mano, porque el servicio no los informa. Todos los campos son editables.</p>
   <div class="rutas">
     <div class="ruta a">
-      <div class="ruta-tit"><span class="dot a"></span><strong id="nom-a">Ruta A</strong><em>referencia</em></div>
-      <div class="fila">
-        <div class="campo"><label for="da">Distancia (km)</label><input type="number" id="da" min="1" step="0.1" value="215"></div>
-        <div class="campo"><label for="va">Velocidad (km/h)</label><input type="number" id="va" min="1" step="0.1" value="72"></div>
-      </div>
-      <div class="fila">
-        <div class="campo"><label for="pa">Peajes (CLP)</label><input type="number" id="pa" min="0" step="100" value="2600"></div>
+      <div class="ruta-tit"><span class="chip a">A</span><strong id="nom-a">Ruta de referencia</strong></div>
+      <div class="ruta-grid">
+        <div><label for="da">Distancia (km)</label><input type="number" id="da" min="1" step="0.1" value="215"></div>
+        <div><label for="va">Velocidad (km/h)</label><input type="number" id="va" min="1" step="0.1" value="72"></div>
+        <div><label for="pa">Peajes (CLP)</label><input type="number" id="pa" min="0" step="100" value="2600"></div>
       </div>
     </div>
     <div class="ruta b">
-      <div class="ruta-tit"><span class="dot b"></span><strong id="nom-b">Ruta B</strong><em>alternativa</em></div>
-      <div class="fila">
-        <div class="campo"><label for="db">Distancia (km)</label><input type="number" id="db" min="1" step="0.1" value="258"></div>
-        <div class="campo"><label for="vb">Velocidad (km/h)</label><input type="number" id="vb" min="1" step="0.1" value="80"></div>
-      </div>
-      <div class="fila">
-        <div class="campo"><label for="pb">Peajes (CLP)</label><input type="number" id="pb" min="0" step="100" value="5200"></div>
+      <div class="ruta-tit"><span class="chip b">B</span><strong id="nom-b">Ruta alternativa</strong></div>
+      <div class="ruta-grid">
+        <div><label for="db">Distancia (km)</label><input type="number" id="db" min="1" step="0.1" value="258"></div>
+        <div><label for="vb">Velocidad (km/h)</label><input type="number" id="vb" min="1" step="0.1" value="80"></div>
+        <div><label for="pb">Peajes (CLP)</label><input type="number" id="pb" min="0" step="100" value="5200"></div>
       </div>
     </div>
   </div>
-  <p class="hint" style="margin-top:12px">El servicio entrega distancia y tiempo; los peajes se ingresan a mano, porque el servicio no los informa. Todos los campos son editables.</p>
-  <p class="error" id="ruta-err" hidden style="margin-top:10px"></p>
+  <p class="error" id="ruta-err" hidden style="margin-top:12px"></p>
 </section>
 
-<!-- ETAPA 2 y 3 -->
-<section class="etapa">
-  <div class="etapa-head"><span class="etapa-n">02·03</span><h2>Comparación de rutas y evaluación de variables</h2></div>
-  <p class="etapa-sub">El rendimiento del vehículo se corrige por la carga antes de calcular el consumo: <span class="num">r = r₀ + k · q</span>. Sobre ese valor se obtienen combustible, tiempo y costo de cada alternativa.</p>
+<section class="bloque">
+  <div class="bloque-head"><span class="bloque-n">02</span><h2>Comparación y evaluación de variables</h2></div>
+  <p class="bloque-sub">El rendimiento del vehículo se corrige por la carga antes de calcular el consumo: <span class="num">r = r₀ + k · q</span>. Sobre ese valor se obtienen combustible, tiempo y costo de cada alternativa.</p>
   <div class="tabla-box">
     <table>
       <thead><tr><th>Magnitud</th><th class="ca" id="th-a">Ruta A</th><th class="cb" id="th-b">Ruta B</th><th>Diferencia</th></tr></thead>
@@ -259,17 +293,15 @@ footer p{margin:0 0 7px}
   <div class="barras" id="barras"></div>
 </section>
 
-<!-- ETAPA 4 -->
-<section class="etapa">
-  <div class="etapa-head"><span class="etapa-n">04</span><h2>Estimación de emisiones e indicadores</h2></div>
-  <p class="etapa-sub">Los cuatro indicadores comparan la ruta alternativa contra la de referencia. Un valor positivo significa que la alternativa mejora respecto de la ruta A.</p>
+<section class="bloque">
+  <div class="bloque-head"><span class="bloque-n">03</span><h2>Emisiones e indicadores</h2></div>
+  <p class="bloque-sub">Los cuatro indicadores comparan la ruta alternativa contra la de referencia. Un valor positivo significa que la alternativa mejora respecto de la ruta A.</p>
   <div class="kpis" id="kpis"></div>
 </section>
 
-<!-- ETAPA 5 -->
-<section class="etapa">
-  <div class="etapa-head"><span class="etapa-n">05</span><h2>Recomendación de ruta</h2></div>
-  <p class="etapa-sub">Cada criterio se normaliza respecto de la mejor alternativa y se pondera. Los pesos son configurables: una empresa con compromisos de carbono y otra con márgenes estrechos no deberían recibir la misma recomendación.</p>
+<section class="bloque">
+  <div class="bloque-head"><span class="bloque-n">04</span><h2>Recomendación de ruta</h2></div>
+  <p class="bloque-sub">Cada criterio se normaliza respecto de la mejor alternativa y se pondera. Los pesos son configurables: una empresa con compromisos de carbono y otra con márgenes estrechos no deberían recibir la misma recomendación.</p>
 
   <div class="veredicto ok" id="veredicto">
     <div class="ver-tit" id="ver-tit">—</div>
@@ -279,11 +311,11 @@ footer p{margin:0 0 7px}
   <div class="indice" id="indice"></div>
 
   <div class="pesos">
-    <div class="campo"><label for="we">Peso · emisiones</label>
+    <div><label for="we">Peso · emisiones</label>
       <div class="slider-row"><input type="range" id="we" min="0" max="100" step="5" value="50"><span class="slider-val num" id="we-out">50%</span></div></div>
-    <div class="campo"><label for="wc">Peso · costo</label>
+    <div><label for="wc">Peso · costo</label>
       <div class="slider-row"><input type="range" id="wc" min="0" max="100" step="5" value="30"><span class="slider-val num" id="wc-out">30%</span></div></div>
-    <div class="campo"><label for="wt">Peso · tiempo</label>
+    <div><label for="wt">Peso · tiempo</label>
       <div class="slider-row"><input type="range" id="wt" min="0" max="100" step="5" value="20"><span class="slider-val num" id="wt-out">20%</span></div></div>
   </div>
   <p class="hint" id="peso-hint" style="margin-top:10px"></p>
@@ -291,20 +323,13 @@ footer p{margin:0 0 7px}
   <details class="params">
     <summary>Parámetros y factores de referencia</summary>
     <div class="params-body">
-      <div class="fila">
-        <div class="campo"><label for="fe">Factor de emisión (kg CO₂e/L)</label><input type="number" id="fe" min="0" step="0.01" value="2.70"></div>
-        <div class="campo"><label for="precio">Precio del diésel (CLP/L)</label><input type="number" id="precio" min="0" step="10" value="1050"></div>
-      </div>
-      <div class="fila">
-        <div class="campo"><label for="ch">Costo hora conductor (CLP/h)</label><input type="number" id="ch" min="0" step="500" value="8000"></div>
-        <div class="campo"><label for="k">Penalización por carga (L/100 km · t)</label><input type="number" id="k" min="0" step="0.05" value="0.55"></div>
-      </div>
-      <div class="fila">
-        <div class="campo">
-          <label for="fv">Factor de velocidad de camión</label>
-          <input type="number" id="fv" min="0.4" max="1" step="0.01" value="0.85">
-          <span class="hint">El servicio de rutas calcula tiempos de automóvil. Este factor los ajusta a velocidad de camión.</span>
-        </div>
+      <div class="params-grid">
+        <div><label for="fe">Factor emisión (kg CO₂e/L)</label><input type="number" id="fe" min="0" step="0.01" value="2.70"></div>
+        <div><label for="precio">Precio diésel (CLP/L)</label><input type="number" id="precio" min="0" step="10" value="1050"></div>
+        <div><label for="ch">Costo hora conductor (CLP/h)</label><input type="number" id="ch" min="0" step="500" value="8000"></div>
+        <div><label for="k">Penalización carga (L/100 km · t)</label><input type="number" id="k" min="0" step="0.05" value="0.55"></div>
+        <div><label for="fv">Factor velocidad camión</label><input type="number" id="fv" min="0.4" max="1" step="0.01" value="0.85">
+          <span class="hint">El servicio calcula tiempos de automóvil; este factor los ajusta a camión.</span></div>
       </div>
       <p class="fuente"><b>Factor de emisión.</b> HuellaChile (Ministerio del Medio Ambiente) publica del orden de 2,71 kg CO₂e por litro de diésel; DEFRA 2025 publica 2,66 kg CO₂e/L para diésel mineral. Se adopta 2,70 como valor de trabajo. Falta confirmar el factor de fuentes móviles de la tabla oficial de HuellaChile.</p>
       <p class="fuente"><b>Precio del diésel.</b> Parámetro volátil durante 2026. El valor por defecto es referencial y debe tomarse del informe semanal de la Comisión Nacional de Energía.</p>
@@ -316,7 +341,7 @@ footer p{margin:0 0 7px}
 <footer>
   <p>Prototipo de la propuesta <i>Plataforma de comparación y optimización de rutas logísticas</i>.</p>
   <p>María Salas · Benjamín Mundaca · Martín Arancibia · Valentina Vergara</p>
-  <p>Rutas: servidor público de demostración de OSRM. Búsqueda de lugares: Photon. Cartografía: OpenStreetMap. Servicios gratuitos de uso ligero, no aptos para operación comercial.</p>
+  <p>Rutas: servidor público de demostración de OSRM. Búsqueda de lugares: Photon y Nominatim. Cartografía: OpenStreetMap. Servicios gratuitos de uso ligero, no aptos para operación comercial.</p>
   <div class="formulas">
     r = r₀ + k · q &nbsp;·&nbsp; C = (d / 100) · r &nbsp;·&nbsp; t = d / v<br>
     E = C · FE &nbsp;·&nbsp; CL = C · Pc + t · Ch + Pj<br>
@@ -331,10 +356,7 @@ footer p{margin:0 0 7px}
 (function(){
   "use strict";
 
-  var OSRM   = "https://router.project-osrm.org/route/v1/driving/";
-  var PHOTON = "https://photon.komoot.io/api/";
-  var BBOX_CHILE = "-76.0,-56.5,-66.0,-17.0";
-
+  var OSRM = "https://router.project-osrm.org/route/v1/driving/";
   var $ = function(id){ return document.getElementById(id); };
 
   var VEHICULOS = [
@@ -344,154 +366,209 @@ footer p{margin:0 0 7px}
     { id:"v4", nombre:"Tractocamión — hasta 28 t",       cap:28, r0:30 }
   ];
 
-  var estado = { origen:null, destino:null, capas:[] };
+  var estado = { origen:null, destino:null, capas:[], marcas:[] };
   var mapa = null;
 
   function nf(n,d){ return isFinite(n) ? n.toLocaleString("es-CL",{minimumFractionDigits:d,maximumFractionDigits:d}) : "—"; }
   function clp(n){ return isFinite(n) ? "$"+Math.round(n).toLocaleString("es-CL") : "—"; }
   function numVal(el,def){ var v=parseFloat(el.value); return isFinite(v)?v:def; }
+  function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim() || "#888"; }
 
-  /* ---------- mapa ---------- */
+  /* ---------------- mapa ---------------- */
   function iniciarMapa(){
     if(typeof L === "undefined"){
-      $("mapa").innerHTML = '<p style="padding:20px; margin:0; color:var(--ink-2); font-size:13.5px">' +
-        'No se pudo cargar la librería del mapa. Los cálculos funcionan igual.</p>';
+      $("mapa").innerHTML = '<p style="padding:20px;margin:0;color:#5c6a67;font-size:13.5px">No se pudo cargar la librería del mapa. Los cálculos funcionan igual.</p>';
       return;
     }
     try{
-      mapa = L.map("mapa",{ scrollWheelZoom:false }).setView([-23.65,-70.40], 7);
+      mapa = L.map("mapa",{ scrollWheelZoom:false }).setView([-23.3,-69.6], 7);
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
-        maxZoom:18,
-        attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        maxZoom:18, attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
       }).addTo(mapa);
     }catch(e){ mapa = null; }
   }
   function limpiarCapas(){
-    if(!mapa){ estado.capas = []; return; }
-    estado.capas.forEach(function(c){ mapa.removeLayer(c); });
-    estado.capas = [];
+    if(!mapa){ estado.capas=[]; estado.marcas=[]; return; }
+    estado.capas.concat(estado.marcas).forEach(function(c){ try{ mapa.removeLayer(c); }catch(e){} });
+    estado.capas = []; estado.marcas = [];
   }
-  function dibujarRuta(geometry, color){
+  function dibujarRuta(geometry, col){
     if(!mapa || !geometry) return;
     try{
-      var capa = L.geoJSON({ type:"Feature", geometry:geometry },
-        { style:{ color:color, weight:5, opacity:.85 } }).addTo(mapa);
+      var capa = L.geoJSON({type:"Feature",geometry:geometry},{style:{color:col,weight:5,opacity:.85}}).addTo(mapa);
       estado.capas.push(capa);
     }catch(e){}
   }
-  function color(nombre){
-    return getComputedStyle(document.documentElement).getPropertyValue(nombre).trim() || "#888";
+  function marcar(coord, col, texto){
+    if(!mapa || !coord) return;
+    try{
+      var m = L.circleMarker([coord[1],coord[0]],
+        { radius:7, color:col, weight:3, fillColor:"#fff", fillOpacity:1 }).addTo(mapa).bindTooltip(texto);
+      estado.marcas.push(m);
+    }catch(e){}
   }
 
-  /* ---------- errores ---------- */
   function mostrarError(msg){ var e=$("error-api"); e.hidden=false; e.textContent=msg; }
   function limpiarError(){ $("error-api").hidden = true; }
 
-  /* ---------- buscador de lugares (Photon) ---------- */
-  function etiqueta(props){
-    var partes = [];
-    var principal = props.name || [props.street, props.housenumber].filter(Boolean).join(" ");
-    if(principal) partes.push(principal);
-    [props.city, props.county, props.state, props.country].forEach(function(x){
-      if(x && partes.indexOf(x) === -1) partes.push(x);
-    });
-    return partes.join(", ") || "Lugar sin nombre";
+  /* ---------------- geocodificación ---------------- */
+  /* Photon primero; si falla, Nominatim. Ambos sin clave. */
+  function geocodificar(texto){
+    var bbox = "-76.0,-56.5,-66.0,-17.0";
+    var urlP = "https://photon.komoot.io/api/?q=" + encodeURIComponent(texto) + "&limit=6&bbox=" + bbox;
+
+    return fetch(urlP)
+      .then(function(r){ if(!r.ok) throw new Error("photon " + r.status); return r.json(); })
+      .then(function(d){
+        var out = ((d && d.features) || []).map(function(f){
+          if(!f.geometry || !f.geometry.coordinates) return null;
+          var p = f.properties || {};
+          var principal = p.name || [p.street, p.housenumber].filter(Boolean).join(" ") || "Lugar";
+          var resto = [];
+          [p.city, p.county, p.state, p.country].forEach(function(x){
+            if(x && x !== principal && resto.indexOf(x) === -1) resto.push(x);
+          });
+          return { principal:principal, resto:resto.join(", "), coord:f.geometry.coordinates };
+        }).filter(Boolean);
+        if(!out.length) throw new Error("photon vacio");
+        return out;
+      })
+      .catch(function(){
+        var urlN = "https://nominatim.openstreetmap.org/search?format=jsonv2&countrycodes=cl&limit=6&q=" +
+                   encodeURIComponent(texto);
+        return fetch(urlN, { headers:{ "Accept":"application/json" } })
+          .then(function(r){ if(!r.ok) throw new Error("nominatim " + r.status); return r.json(); })
+          .then(function(arr){
+            var out = (arr || []).map(function(x){
+              var partes = String(x.display_name || "").split(",").map(function(s){ return s.trim(); });
+              return {
+                principal: partes.shift() || "Lugar",
+                resto: partes.slice(0,3).join(", "),
+                coord: [parseFloat(x.lon), parseFloat(x.lat)]
+              };
+            }).filter(function(x){ return isFinite(x.coord[0]) && isFinite(x.coord[1]); });
+            if(!out.length) throw new Error("sin resultados");
+            return out;
+          });
+      });
   }
 
-  function montarBuscador(inputId, sugId, hintId, campo){
-    var input=$(inputId), caja=$(sugId), hint=$(hintId), timer=null;
+  function revisarBoton(){
+    var o = $("origen").value.trim(), d = $("destino").value.trim();
+    $("btn-calcular").disabled = !(o.length >= 3 && d.length >= 3);
+  }
+
+  function montarBuscador(inputId, sugId, campo){
+    var input = $(inputId), caja = $(sugId), timer = null, pedido = 0;
 
     input.addEventListener("input", function(){
       estado[campo] = null;
-      $("btn-calcular").disabled = true;
+      revisarBoton();
       var texto = input.value.trim();
       clearTimeout(timer);
-      if(texto.length < 3){ caja.hidden = true; hint.textContent = "Escribe al menos 3 letras."; return; }
-      hint.textContent = "Buscando…";
-      timer = setTimeout(function(){ buscar(texto); }, 400);
-    });
-    input.addEventListener("blur", function(){ setTimeout(function(){ caja.hidden = true; }, 180); });
-
-    function buscar(texto){
-      var url = PHOTON + "?q=" + encodeURIComponent(texto) + "&limit=6&lang=es&bbox=" + BBOX_CHILE;
-      fetch(url).then(function(r){
-        if(!r.ok) throw new Error("http");
-        return r.json();
-      }).then(function(d){
-        var items = (d && d.features) || [];
-        caja.innerHTML = "";
-        if(!items.length){ caja.hidden = true; hint.textContent = "Sin resultados para ese texto."; return; }
-        hint.textContent = "Elige una opción de la lista.";
-        items.forEach(function(f){
-          if(!f.geometry || !f.geometry.coordinates) return;
-          var lab = etiqueta(f.properties || {});
-          var b = document.createElement("button");
-          b.type = "button";
-          b.textContent = lab;
-          b.addEventListener("mousedown", function(ev){
-            ev.preventDefault();
-            input.value = lab;
-            estado[campo] = { label:lab, coord:f.geometry.coordinates };
-            hint.textContent = "Coordenadas: " + f.geometry.coordinates[1].toFixed(4) + ", " + f.geometry.coordinates[0].toFixed(4);
-            caja.hidden = true;
-            $("btn-calcular").disabled = !(estado.origen && estado.destino);
-          });
-          caja.appendChild(b);
+      if(texto.length < 3){ caja.hidden = true; return; }
+      timer = setTimeout(function(){
+        var mio = ++pedido;
+        geocodificar(texto).then(function(items){
+          if(mio !== pedido) return;
+          pintar(items);
+        }).catch(function(){
+          if(mio !== pedido) return;
+          caja.hidden = true;
         });
-        caja.hidden = false;
-      }).catch(function(){
-        caja.hidden = true;
-        hint.textContent = "";
-        mostrarError("No se pudo conectar con el buscador de lugares. Revisa tu conexión o escribe los valores de cada ruta a mano.");
+      }, 280);
+    });
+
+    input.addEventListener("blur", function(){ setTimeout(function(){ caja.hidden = true; }, 170); });
+    input.addEventListener("focus", function(){ if(caja.children.length) caja.hidden = false; });
+
+    function pintar(items){
+      caja.innerHTML = "";
+      if(!items.length){ caja.hidden = true; return; }
+      items.forEach(function(it){
+        var b = document.createElement("button");
+        b.type = "button";
+        b.innerHTML = "<b></b><span></span>";
+        b.querySelector("b").textContent = it.principal;
+        b.querySelector("span").textContent = it.resto;
+        b.addEventListener("mousedown", function(ev){
+          ev.preventDefault();
+          input.value = it.principal + (it.resto ? ", " + it.resto : "");
+          estado[campo] = { label:input.value, coord:it.coord };
+          caja.hidden = true;
+          revisarBoton();
+        });
+        caja.appendChild(b);
       });
+      caja.hidden = false;
     }
   }
 
-  /* ---------- cálculo de rutas (OSRM) ---------- */
+  /* ---------------- calcular ---------------- */
+  function asegurarPunto(campo, inputId){
+    if(estado[campo]) return Promise.resolve(estado[campo]);
+    var texto = $(inputId).value.trim();
+    if(texto.length < 3) return Promise.reject(new Error("corto"));
+    return geocodificar(texto).then(function(items){
+      estado[campo] = { label:items[0].principal, coord:items[0].coord };
+      return estado[campo];
+    });
+  }
+
   $("btn-calcular").addEventListener("click", function(){
-    if(!estado.origen || !estado.destino) return;
     limpiarError();
     var btn = $("btn-calcular");
     btn.disabled = true; btn.textContent = "Calculando…";
 
-    var o = estado.origen.coord, d = estado.destino.coord;
-    var url = OSRM + o[0] + "," + o[1] + ";" + d[0] + "," + d[1] +
-              "?alternatives=true&overview=full&geometries=geojson";
+    Promise.all([ asegurarPunto("origen","origen"), asegurarPunto("destino","destino") ])
+      .catch(function(){ throw new Error("geo"); })
+      .then(function(){
+        var o = estado.origen.coord, d = estado.destino.coord;
+        var url = OSRM + o[0]+","+o[1]+";"+d[0]+","+d[1] + "?alternatives=true&overview=full&geometries=geojson";
+        return fetch(url).then(function(r){
+          if(r.status === 429) throw new Error("cuota");
+          if(!r.ok) throw new Error("http" + r.status);
+          return r.json();
+        });
+      })
+      .then(function(data){
+        if(!data || data.code !== "Ok" || !data.routes || !data.routes.length) throw new Error("sinruta");
+        limpiarCapas();
 
-    fetch(url).then(function(r){
-      if(r.status === 429) throw new Error("cuota");
-      if(!r.ok) throw new Error("http");
-      return r.json();
-    }).then(function(data){
-      if(!data || data.code !== "Ok" || !data.routes || !data.routes.length) throw new Error("sinruta");
-      limpiarCapas();
+        aplicarRuta(data.routes[0], "a", "Ruta principal");
+        dibujarRuta(data.routes[0].geometry, css("--route-a"));
 
-      aplicarRuta(data.routes[0], "a", "Ruta principal");
-      dibujarRuta(data.routes[0].geometry, color("--route-a"));
+        if(data.routes.length > 1){
+          aplicarRuta(data.routes[1], "b", "Ruta alternativa");
+          dibujarRuta(data.routes[1].geometry, css("--route-b"));
+        } else {
+          $("nom-b").textContent = "Alternativa manual";
+          $("th-b").textContent  = "Alternativa manual";
+          mostrarError("El servicio encontró una sola ruta entre esos puntos. Edita a mano los datos de la ruta B para comparar.");
+        }
 
-      if(data.routes.length > 1){
-        aplicarRuta(data.routes[1], "b", "Ruta alternativa");
-        dibujarRuta(data.routes[1].geometry, color("--route-b"));
-      } else {
-        $("nom-b").textContent = "Alternativa manual";
-        $("th-b").textContent  = "Alternativa manual";
-        mostrarError("El servicio encontró una sola ruta entre esos puntos. La ruta B quedó con los valores anteriores: edítala a mano para comparar.");
-      }
+        marcar(estado.origen.coord, css("--route-a"), estado.origen.label);
+        marcar(estado.destino.coord, css("--route-b"), estado.destino.label);
 
-      if(mapa && estado.capas.length){
-        try{ mapa.fitBounds(L.featureGroup(estado.capas).getBounds(), { padding:[28,28] }); }catch(e){}
-      }
-      render();
-    }).catch(function(err){
-      var m = {
-        cuota:"El servidor de rutas está saturado en este momento. Espera un minuto y vuelve a intentar.",
-        sinruta:"No se encontró una ruta por carretera entre esos dos puntos.",
-        http:"El servidor de rutas devolvió un error. Intenta de nuevo en unos segundos."
-      }[err.message] || "No se pudo conectar con el servidor de rutas. Puedes escribir distancia y velocidad a mano.";
-      mostrarError(m);
-    }).then(function(){
-      btn.disabled = false; btn.textContent = "Calcular rutas";
-    });
+        if(mapa && estado.capas.length){
+          try{ mapa.fitBounds(L.featureGroup(estado.capas).getBounds(), { padding:[30,30] }); }catch(e){}
+        }
+        render();
+      })
+      .catch(function(err){
+        var m = err.message || "";
+        var txt;
+        if(m === "geo") txt = "No se pudo encontrar el origen o el destino. Prueba con un nombre más simple, por ejemplo solo la ciudad.";
+        else if(m === "cuota") txt = "El servidor de rutas está saturado. Espera un minuto y vuelve a intentar.";
+        else if(m === "sinruta") txt = "No se encontró una ruta por carretera entre esos dos puntos.";
+        else if(m.indexOf("http") === 0) txt = "El servidor de rutas respondió con error (" + m + "). Intenta de nuevo en unos segundos.";
+        else txt = "No se pudo conectar con el servidor de rutas (" + m + "). Puedes escribir distancia y velocidad a mano.";
+        mostrarError(txt);
+      })
+      .then(function(){
+        btn.textContent = "Calcular rutas";
+        revisarBoton();
+      });
   });
 
   function aplicarRuta(ruta, cual, nombre){
@@ -505,7 +582,7 @@ footer p{margin:0 0 7px}
     $("th-" + cual).textContent  = nombre;
   }
 
-  /* ---------- motor de cálculo ---------- */
+  /* ---------------- motor de cálculo ---------------- */
   function calcular(d, v, peaje, r, p){
     var C = (d/100) * r, t = d/v;
     return { d:d, v:v, peaje:peaje, r:r, C:C, t:t, E:C*p.fe, CL:C*p.precio + t*p.ch + peaje };
@@ -529,7 +606,7 @@ footer p{margin:0 0 7px}
     $("carga").max = String(veh.cap);
     if(carga > veh.cap){ carga = veh.cap; $("carga").value = String(carga); }
     $("carga-out").textContent = nf(carga,0) + " t";
-    $("carga-hint").textContent = "Capacidad: " + veh.cap + " t · rendimiento base " + veh.r0 + " L/100 km";
+    $("carga-hint").textContent = "Capacidad " + veh.cap + " t · rendimiento base " + veh.r0 + " L/100 km";
 
     var r = veh.r0 + p.k * carga;
 
@@ -582,6 +659,7 @@ footer p{margin:0 0 7px}
     grupos.forEach(function(g){
       var max = Math.max(g.a,g.b) || 1;
       var div = document.createElement("div");
+      div.className = "bgrupo";
       div.innerHTML = '<div class="bgrupo-tit">'+g.tit+'</div>' +
         '<div class="brow"><span class="blabel">A</span><div class="btrack"><div class="bfill a" style="width:'+(g.a/max*100).toFixed(1)+'%"></div></div><span class="bval">'+g.fmt(g.a)+'</span></div>' +
         '<div class="brow"><span class="blabel">B</span><div class="btrack"><div class="bfill b" style="width:'+(g.b/max*100).toFixed(1)+'%"></div></div><span class="bval">'+g.fmt(g.b)+'</span></div>';
@@ -651,7 +729,7 @@ footer p{margin:0 0 7px}
     }
   }
 
-  /* ---------- arranque ---------- */
+  /* ---------------- arranque ---------------- */
   VEHICULOS.forEach(function(v){
     var o = document.createElement("option");
     o.value = v.id; o.textContent = v.nombre;
@@ -665,8 +743,8 @@ footer p{margin:0 0 7px}
   $("veh").addEventListener("change", render);
 
   iniciarMapa();
-  montarBuscador("origen","sug-origen","hint-origen","origen");
-  montarBuscador("destino","sug-destino","hint-destino","destino");
+  montarBuscador("origen","sug-origen","origen");
+  montarBuscador("destino","sug-destino","destino");
   render();
 })();
 </script>
