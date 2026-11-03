@@ -1,0 +1,674 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Comparador de Rutas Logísticas</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+:root{
+  --bg:#f1f4f3; --surface:#ffffff; --surface-2:#e9eeed;
+  --ink:#15201f; --ink-2:#596765; --ink-3:#879593;
+  --line:#d6dedc; --line-2:#c2cdca;
+  --accent:#0f6b64;
+  --route-a:#a0562a; --route-b:#2d5c8f;
+  --good:#2b6a4a; --good-soft:#dfefe6;
+  --warn:#8a5704; --warn-soft:#f8ecd6;
+  --bad:#9a3232; --bad-soft:#f7e3e3;
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
+  --mono:"IBM Plex Mono","SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#111716; --surface:#19211f; --surface-2:#222b29;
+    --ink:#e9edec; --ink-2:#9daba8; --ink-3:#7a8885;
+    --line:#2b3533; --line-2:#3a4644;
+    --accent:#4fb3a8;
+    --route-a:#d99a68; --route-b:#85acdc;
+    --good:#72c293; --good-soft:#17271f;
+    --warn:#e3b055; --warn-soft:#2a2214;
+    --bad:#e08080; --bad-soft:#2b1a1a;
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg); color:var(--ink); font-family:var(--body); font-size:15px; line-height:1.55}
+.wrap{max-width:1060px; margin:0 auto; padding:0 16px 56px}
+h1,h2{font-family:var(--display); margin:0; text-wrap:balance}
+.num{font-family:var(--mono); font-variant-numeric:tabular-nums}
+
+header.top{padding:38px 0 26px; border-bottom:1px solid var(--line)}
+h1{font-size:clamp(25px,5vw,36px); font-weight:700; letter-spacing:-.02em; line-height:1.1}
+.sub{color:var(--ink-2); max-width:62ch; margin-top:10px}
+
+section.etapa{padding:32px 0; border-bottom:1px solid var(--line)}
+.etapa-head{display:flex; align-items:baseline; gap:12px; margin-bottom:6px}
+.etapa-n{font-family:var(--mono); font-size:12px; font-weight:600; color:var(--accent);
+  border:1px solid var(--accent); border-radius:3px; padding:1px 6px; flex:none}
+h2{font-size:19px; font-weight:600; letter-spacing:-.01em}
+.etapa-sub{color:var(--ink-2); font-size:14px; margin:0 0 20px; max-width:66ch}
+
+.fila{display:flex; flex-wrap:wrap; gap:16px; margin-bottom:18px}
+.campo{display:flex; flex-direction:column; gap:5px; min-width:0; flex:1 1 200px; position:relative}
+label{font-size:12px; font-weight:600; letter-spacing:.03em; color:var(--ink-2); text-transform:uppercase}
+select,input[type=number],input[type=text]{
+  font-family:var(--body); font-size:15px; color:var(--ink); background:var(--surface);
+  border:1px solid var(--line-2); border-radius:4px; padding:8px 10px; width:100%; min-width:0}
+input[type=number]{font-family:var(--mono); font-variant-numeric:tabular-nums}
+select:focus-visible,input:focus-visible,button:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+input[type=range]{width:100%; accent-color:var(--accent)}
+.slider-row{display:flex; align-items:center; gap:12px}
+.slider-val{font-family:var(--mono); font-size:15px; font-weight:600; min-width:62px; text-align:right; flex:none}
+.hint{font-size:12.5px; color:var(--ink-3)}
+.error{font-size:13px; color:var(--bad); font-weight:500}
+
+button.accion{font-family:var(--body); font-size:15px; font-weight:600; color:#fff; background:var(--accent);
+  border:none; border-radius:4px; padding:10px 20px; cursor:pointer}
+button.accion:disabled{opacity:.45; cursor:default}
+button.accion:hover:not(:disabled){filter:brightness(1.08)}
+
+.sugerencias{position:absolute; top:100%; left:0; right:0; z-index:900; background:var(--surface);
+  border:1px solid var(--line-2); border-radius:4px; margin-top:3px; max-height:230px; overflow-y:auto;
+  box-shadow:0 6px 18px rgba(0,0,0,.12)}
+.sugerencias button{display:block; width:100%; text-align:left; background:none; border:none;
+  padding:9px 11px; font-family:var(--body); font-size:14px; color:var(--ink); cursor:pointer;
+  border-bottom:1px solid var(--line)}
+.sugerencias button:last-child{border-bottom:none}
+.sugerencias button:hover,.sugerencias button:focus{background:var(--surface-2)}
+
+#mapa{height:380px; border-radius:6px; border:1px solid var(--line); margin-top:4px; background:var(--surface-2)}
+.leyenda{display:flex; flex-wrap:wrap; gap:16px; margin-top:12px; font-size:13px; color:var(--ink-2)}
+.leyenda span{display:flex; align-items:center; gap:7px}
+.swatch{width:18px; height:3px; border-radius:2px; flex:none}
+.sw-a{background:var(--route-a)} .sw-b{background:var(--route-b)}
+
+.rutas{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px}
+.ruta{background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:16px; min-width:0}
+.ruta.a{border-top:3px solid var(--route-a)}
+.ruta.b{border-top:3px solid var(--route-b)}
+.ruta-tit{display:flex; align-items:center; gap:8px; margin-bottom:14px}
+.dot{width:9px; height:9px; border-radius:50%; flex:none}
+.dot.a{background:var(--route-a)} .dot.b{background:var(--route-b)}
+.ruta-tit strong{font-family:var(--display); font-size:15px; font-weight:600}
+.ruta-tit em{font-size:12px; color:var(--ink-3); margin-left:auto; font-style:normal; font-weight:500}
+.ruta .campo{flex:1 1 100%}
+.ruta .fila{gap:12px; margin-bottom:12px}
+.ruta .fila:last-child{margin-bottom:0}
+
+.tabla-box{overflow-x:auto; border:1px solid var(--line); border-radius:6px; background:var(--surface)}
+table{border-collapse:collapse; width:100%; min-width:460px}
+th,td{padding:10px 14px; text-align:right; border-bottom:1px solid var(--line); font-size:14px}
+th:first-child,td:first-child{text-align:left}
+thead th{font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-2);
+  font-weight:600; background:var(--surface-2)}
+thead th.ca{color:var(--route-a)} thead th.cb{color:var(--route-b)}
+tbody tr:last-child td{border-bottom:none}
+tbody td:not(:first-child){font-family:var(--mono); font-variant-numeric:tabular-nums}
+td.mejor{font-weight:600}
+.unidad{color:var(--ink-3); font-size:12px; font-weight:400}
+
+.barras{margin-top:20px; display:flex; flex-direction:column; gap:16px}
+.bgrupo-tit{font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-2); margin-bottom:7px}
+.brow{display:grid; grid-template-columns:28px 1fr auto; align-items:center; gap:10px; margin-bottom:5px}
+.blabel{font-family:var(--mono); font-size:11.5px; font-weight:600; color:var(--ink-3)}
+.btrack{background:var(--surface-2); border-radius:2px; height:16px; overflow:hidden; min-width:0}
+.bfill{height:100%; border-radius:2px; transition:width .25s ease}
+.bfill.a{background:var(--route-a)} .bfill.b{background:var(--route-b)}
+.bval{font-family:var(--mono); font-size:12.5px; font-variant-numeric:tabular-nums; color:var(--ink-2); min-width:78px; text-align:right}
+
+.kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:14px}
+.kpi{background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:14px 16px; min-width:0}
+.kpi-lab{font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-2); font-weight:600}
+.kpi-val{font-family:var(--mono); font-size:26px; font-weight:600; letter-spacing:-.02em; margin-top:6px; line-height:1.1}
+.kpi-val.pos{color:var(--good)} .kpi-val.neg{color:var(--bad)}
+.kpi-pie{font-size:12.5px; color:var(--ink-3); margin-top:4px}
+.kpi-form{font-family:var(--mono); font-size:11px; color:var(--ink-3); margin-top:9px; padding-top:8px; border-top:1px solid var(--line)}
+
+.veredicto{border-radius:6px; padding:18px 20px; border:1px solid}
+.veredicto.ok{background:var(--good-soft); border-color:var(--good)}
+.veredicto.alerta{background:var(--warn-soft); border-color:var(--warn)}
+.ver-tit{font-family:var(--display); font-size:19px; font-weight:700; letter-spacing:-.01em}
+.veredicto.ok .ver-tit{color:var(--good)} .veredicto.alerta .ver-tit{color:var(--warn)}
+.ver-txt{margin-top:7px; font-size:14.5px}
+.ver-extra{margin-top:11px; padding-top:11px; border-top:1px solid; font-size:13.5px}
+.veredicto.ok .ver-extra{border-color:var(--good)} .veredicto.alerta .ver-extra{border-color:var(--warn)}
+.pesos{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin-top:20px}
+.indice{display:flex; flex-wrap:wrap; gap:10px; margin-top:16px}
+.ipill{font-family:var(--mono); font-size:13px; padding:6px 11px; border-radius:4px;
+  background:var(--surface-2); border:1px solid var(--line)}
+.ipill b{font-weight:600}
+
+details.params{border:1px solid var(--line); border-radius:6px; background:var(--surface); margin-top:26px}
+details.params summary{padding:13px 16px; cursor:pointer; font-family:var(--display); font-weight:600;
+  font-size:15px; list-style:none; display:flex; align-items:center; gap:9px}
+details.params summary::-webkit-details-marker{display:none}
+details.params summary::before{content:"+"; font-family:var(--mono); color:var(--accent); font-weight:600}
+details.params[open] summary::before{content:"−"}
+.params-body{padding:0 16px 18px; border-top:1px solid var(--line)}
+.params-body .fila{margin-top:16px}
+.fuente{font-size:12.5px; color:var(--ink-3); margin-top:14px; padding-left:11px; border-left:2px solid var(--line-2)}
+.fuente b{color:var(--ink-2); font-weight:600}
+
+.aviso{border-radius:6px; padding:14px 16px; font-size:13.5px; border:1px solid; margin-top:16px}
+.aviso.info{background:var(--surface); border-color:var(--line-2); color:var(--ink-2)}
+.aviso.err{background:var(--bad-soft); border-color:var(--bad); color:var(--bad)}
+.aviso a{color:var(--accent)}
+
+footer{padding:28px 0; color:var(--ink-3); font-size:13px}
+footer p{margin:0 0 7px}
+.formulas{font-family:var(--mono); font-size:12px; color:var(--ink-2); margin-top:12px; line-height:1.9}
+@media (prefers-reduced-motion:reduce){.bfill{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <h1>Comparador de rutas logísticas</h1>
+  <p class="sub">Compara dos alternativas de transporte entre un origen y un destino según distancia, consumo de combustible, carga, tiempo y emisiones, y recomienda una ruta mostrando su efecto operacional y económico.</p>
+</header>
+
+<!-- ETAPA 1 -->
+<section class="etapa">
+  <div class="etapa-head"><span class="etapa-n">01</span><h2>Ingreso de datos</h2></div>
+  <p class="etapa-sub">Escribe el origen y el destino. El buscador sugiere lugares reales dentro de Chile y el servicio de rutas devuelve la ruta principal y una alternativa, con su distancia y su tiempo sobre la red vial real.</p>
+
+  <div class="fila">
+    <div class="campo">
+      <label for="origen">Origen</label>
+      <input type="text" id="origen" placeholder="Ej. Puerto de Antofagasta" autocomplete="off">
+      <div class="sugerencias" id="sug-origen" hidden></div>
+      <span class="hint" id="hint-origen">Escribe al menos 3 letras.</span>
+    </div>
+    <div class="campo">
+      <label for="destino">Destino</label>
+      <input type="text" id="destino" placeholder="Ej. Calama" autocomplete="off">
+      <div class="sugerencias" id="sug-destino" hidden></div>
+      <span class="hint" id="hint-destino">Escribe al menos 3 letras.</span>
+    </div>
+  </div>
+
+  <div class="fila">
+    <div class="campo" style="flex:0 0 auto">
+      <button class="accion" id="btn-calcular" type="button" disabled>Calcular rutas</button>
+    </div>
+  </div>
+
+  <div class="aviso err" id="error-api" hidden></div>
+
+  <div id="mapa"></div>
+  <div class="leyenda">
+    <span><i class="swatch sw-a"></i> Ruta A · referencia</span>
+    <span><i class="swatch sw-b"></i> Ruta B · alternativa</span>
+  </div>
+
+  <div class="fila" style="margin-top:24px">
+    <div class="campo">
+      <label for="veh">Vehículo</label>
+      <select id="veh"></select>
+    </div>
+    <div class="campo">
+      <label for="carga">Carga transportada</label>
+      <div class="slider-row">
+        <input type="range" id="carga" min="1" max="28" step="1" value="12">
+        <span class="slider-val num" id="carga-out">12 t</span>
+      </div>
+      <span class="hint" id="carga-hint"></span>
+    </div>
+  </div>
+
+  <div class="rutas">
+    <div class="ruta a">
+      <div class="ruta-tit"><span class="dot a"></span><strong id="nom-a">Ruta A</strong><em>referencia</em></div>
+      <div class="fila">
+        <div class="campo"><label for="da">Distancia (km)</label><input type="number" id="da" min="1" step="0.1" value="215"></div>
+        <div class="campo"><label for="va">Velocidad (km/h)</label><input type="number" id="va" min="1" step="0.1" value="72"></div>
+      </div>
+      <div class="fila">
+        <div class="campo"><label for="pa">Peajes (CLP)</label><input type="number" id="pa" min="0" step="100" value="2600"></div>
+      </div>
+    </div>
+    <div class="ruta b">
+      <div class="ruta-tit"><span class="dot b"></span><strong id="nom-b">Ruta B</strong><em>alternativa</em></div>
+      <div class="fila">
+        <div class="campo"><label for="db">Distancia (km)</label><input type="number" id="db" min="1" step="0.1" value="258"></div>
+        <div class="campo"><label for="vb">Velocidad (km/h)</label><input type="number" id="vb" min="1" step="0.1" value="80"></div>
+      </div>
+      <div class="fila">
+        <div class="campo"><label for="pb">Peajes (CLP)</label><input type="number" id="pb" min="0" step="100" value="5200"></div>
+      </div>
+    </div>
+  </div>
+  <p class="hint" style="margin-top:12px">El servicio entrega distancia y tiempo; los peajes se ingresan a mano, porque el servicio no los informa. Todos los campos son editables.</p>
+  <p class="error" id="ruta-err" hidden style="margin-top:10px"></p>
+</section>
+
+<!-- ETAPA 2 y 3 -->
+<section class="etapa">
+  <div class="etapa-head"><span class="etapa-n">02·03</span><h2>Comparación de rutas y evaluación de variables</h2></div>
+  <p class="etapa-sub">El rendimiento del vehículo se corrige por la carga antes de calcular el consumo: <span class="num">r = r₀ + k · q</span>. Sobre ese valor se obtienen combustible, tiempo y costo de cada alternativa.</p>
+  <div class="tabla-box">
+    <table>
+      <thead><tr><th>Magnitud</th><th class="ca" id="th-a">Ruta A</th><th class="cb" id="th-b">Ruta B</th><th>Diferencia</th></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+  <div class="barras" id="barras"></div>
+</section>
+
+<!-- ETAPA 4 -->
+<section class="etapa">
+  <div class="etapa-head"><span class="etapa-n">04</span><h2>Estimación de emisiones e indicadores</h2></div>
+  <p class="etapa-sub">Los cuatro indicadores comparan la ruta alternativa contra la de referencia. Un valor positivo significa que la alternativa mejora respecto de la ruta A.</p>
+  <div class="kpis" id="kpis"></div>
+</section>
+
+<!-- ETAPA 5 -->
+<section class="etapa">
+  <div class="etapa-head"><span class="etapa-n">05</span><h2>Recomendación de ruta</h2></div>
+  <p class="etapa-sub">Cada criterio se normaliza respecto de la mejor alternativa y se pondera. Los pesos son configurables: una empresa con compromisos de carbono y otra con márgenes estrechos no deberían recibir la misma recomendación.</p>
+
+  <div class="veredicto ok" id="veredicto">
+    <div class="ver-tit" id="ver-tit">—</div>
+    <div class="ver-txt" id="ver-txt">—</div>
+    <div class="ver-extra" id="ver-extra" hidden></div>
+  </div>
+  <div class="indice" id="indice"></div>
+
+  <div class="pesos">
+    <div class="campo"><label for="we">Peso · emisiones</label>
+      <div class="slider-row"><input type="range" id="we" min="0" max="100" step="5" value="50"><span class="slider-val num" id="we-out">50%</span></div></div>
+    <div class="campo"><label for="wc">Peso · costo</label>
+      <div class="slider-row"><input type="range" id="wc" min="0" max="100" step="5" value="30"><span class="slider-val num" id="wc-out">30%</span></div></div>
+    <div class="campo"><label for="wt">Peso · tiempo</label>
+      <div class="slider-row"><input type="range" id="wt" min="0" max="100" step="5" value="20"><span class="slider-val num" id="wt-out">20%</span></div></div>
+  </div>
+  <p class="hint" id="peso-hint" style="margin-top:10px"></p>
+
+  <details class="params">
+    <summary>Parámetros y factores de referencia</summary>
+    <div class="params-body">
+      <div class="fila">
+        <div class="campo"><label for="fe">Factor de emisión (kg CO₂e/L)</label><input type="number" id="fe" min="0" step="0.01" value="2.70"></div>
+        <div class="campo"><label for="precio">Precio del diésel (CLP/L)</label><input type="number" id="precio" min="0" step="10" value="1050"></div>
+      </div>
+      <div class="fila">
+        <div class="campo"><label for="ch">Costo hora conductor (CLP/h)</label><input type="number" id="ch" min="0" step="500" value="8000"></div>
+        <div class="campo"><label for="k">Penalización por carga (L/100 km · t)</label><input type="number" id="k" min="0" step="0.05" value="0.55"></div>
+      </div>
+      <div class="fila">
+        <div class="campo">
+          <label for="fv">Factor de velocidad de camión</label>
+          <input type="number" id="fv" min="0.4" max="1" step="0.01" value="0.85">
+          <span class="hint">El servicio de rutas calcula tiempos de automóvil. Este factor los ajusta a velocidad de camión.</span>
+        </div>
+      </div>
+      <p class="fuente"><b>Factor de emisión.</b> HuellaChile (Ministerio del Medio Ambiente) publica del orden de 2,71 kg CO₂e por litro de diésel; DEFRA 2025 publica 2,66 kg CO₂e/L para diésel mineral. Se adopta 2,70 como valor de trabajo. Falta confirmar el factor de fuentes móviles de la tabla oficial de HuellaChile.</p>
+      <p class="fuente"><b>Precio del diésel.</b> Parámetro volátil durante 2026. El valor por defecto es referencial y debe tomarse del informe semanal de la Comisión Nacional de Energía.</p>
+      <p class="fuente"><b>Costo hora conductor, rendimiento base, penalización por carga y factor de velocidad.</b> Supuestos del grupo, pendientes de calibración con fichas técnicas y datos del sector.</p>
+    </div>
+  </details>
+</section>
+
+<footer>
+  <p>Prototipo de la propuesta <i>Plataforma de comparación y optimización de rutas logísticas</i>.</p>
+  <p>María Salas · Benjamín Mundaca · Martín Arancibia · Valentina Vergara</p>
+  <p>Rutas: servidor público de demostración de OSRM. Búsqueda de lugares: Photon. Cartografía: OpenStreetMap. Servicios gratuitos de uso ligero, no aptos para operación comercial.</p>
+  <div class="formulas">
+    r = r₀ + k · q &nbsp;·&nbsp; C = (d / 100) · r &nbsp;·&nbsp; t = d / v<br>
+    E = C · FE &nbsp;·&nbsp; CL = C · Pc + t · Ch + Pj<br>
+    I = w<sub>e</sub>·score<sub>E</sub> + w<sub>c</sub>·score<sub>CL</sub> + w<sub>t</sub>·score<sub>t</sub>, con score = mejor / valor
+  </div>
+</footer>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  var OSRM   = "https://router.project-osrm.org/route/v1/driving/";
+  var PHOTON = "https://photon.komoot.io/api/";
+  var BBOX_CHILE = "-76.0,-56.5,-66.0,-17.0";
+
+  var $ = function(id){ return document.getElementById(id); };
+
+  var VEHICULOS = [
+    { id:"v1", nombre:"Camión 3/4 — hasta 5 t",          cap:5,  r0:14 },
+    { id:"v2", nombre:"Camión simple — hasta 12 t",      cap:12, r0:22 },
+    { id:"v3", nombre:"Camión de dos ejes — hasta 18 t", cap:18, r0:26 },
+    { id:"v4", nombre:"Tractocamión — hasta 28 t",       cap:28, r0:30 }
+  ];
+
+  var estado = { origen:null, destino:null, capas:[] };
+  var mapa = null;
+
+  function nf(n,d){ return isFinite(n) ? n.toLocaleString("es-CL",{minimumFractionDigits:d,maximumFractionDigits:d}) : "—"; }
+  function clp(n){ return isFinite(n) ? "$"+Math.round(n).toLocaleString("es-CL") : "—"; }
+  function numVal(el,def){ var v=parseFloat(el.value); return isFinite(v)?v:def; }
+
+  /* ---------- mapa ---------- */
+  function iniciarMapa(){
+    if(typeof L === "undefined"){
+      $("mapa").innerHTML = '<p style="padding:20px; margin:0; color:var(--ink-2); font-size:13.5px">' +
+        'No se pudo cargar la librería del mapa. Los cálculos funcionan igual.</p>';
+      return;
+    }
+    try{
+      mapa = L.map("mapa",{ scrollWheelZoom:false }).setView([-23.65,-70.40], 7);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
+        maxZoom:18,
+        attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      }).addTo(mapa);
+    }catch(e){ mapa = null; }
+  }
+  function limpiarCapas(){
+    if(!mapa){ estado.capas = []; return; }
+    estado.capas.forEach(function(c){ mapa.removeLayer(c); });
+    estado.capas = [];
+  }
+  function dibujarRuta(geometry, color){
+    if(!mapa || !geometry) return;
+    try{
+      var capa = L.geoJSON({ type:"Feature", geometry:geometry },
+        { style:{ color:color, weight:5, opacity:.85 } }).addTo(mapa);
+      estado.capas.push(capa);
+    }catch(e){}
+  }
+  function color(nombre){
+    return getComputedStyle(document.documentElement).getPropertyValue(nombre).trim() || "#888";
+  }
+
+  /* ---------- errores ---------- */
+  function mostrarError(msg){ var e=$("error-api"); e.hidden=false; e.textContent=msg; }
+  function limpiarError(){ $("error-api").hidden = true; }
+
+  /* ---------- buscador de lugares (Photon) ---------- */
+  function etiqueta(props){
+    var partes = [];
+    var principal = props.name || [props.street, props.housenumber].filter(Boolean).join(" ");
+    if(principal) partes.push(principal);
+    [props.city, props.county, props.state, props.country].forEach(function(x){
+      if(x && partes.indexOf(x) === -1) partes.push(x);
+    });
+    return partes.join(", ") || "Lugar sin nombre";
+  }
+
+  function montarBuscador(inputId, sugId, hintId, campo){
+    var input=$(inputId), caja=$(sugId), hint=$(hintId), timer=null;
+
+    input.addEventListener("input", function(){
+      estado[campo] = null;
+      $("btn-calcular").disabled = true;
+      var texto = input.value.trim();
+      clearTimeout(timer);
+      if(texto.length < 3){ caja.hidden = true; hint.textContent = "Escribe al menos 3 letras."; return; }
+      hint.textContent = "Buscando…";
+      timer = setTimeout(function(){ buscar(texto); }, 400);
+    });
+    input.addEventListener("blur", function(){ setTimeout(function(){ caja.hidden = true; }, 180); });
+
+    function buscar(texto){
+      var url = PHOTON + "?q=" + encodeURIComponent(texto) + "&limit=6&lang=es&bbox=" + BBOX_CHILE;
+      fetch(url).then(function(r){
+        if(!r.ok) throw new Error("http");
+        return r.json();
+      }).then(function(d){
+        var items = (d && d.features) || [];
+        caja.innerHTML = "";
+        if(!items.length){ caja.hidden = true; hint.textContent = "Sin resultados para ese texto."; return; }
+        hint.textContent = "Elige una opción de la lista.";
+        items.forEach(function(f){
+          if(!f.geometry || !f.geometry.coordinates) return;
+          var lab = etiqueta(f.properties || {});
+          var b = document.createElement("button");
+          b.type = "button";
+          b.textContent = lab;
+          b.addEventListener("mousedown", function(ev){
+            ev.preventDefault();
+            input.value = lab;
+            estado[campo] = { label:lab, coord:f.geometry.coordinates };
+            hint.textContent = "Coordenadas: " + f.geometry.coordinates[1].toFixed(4) + ", " + f.geometry.coordinates[0].toFixed(4);
+            caja.hidden = true;
+            $("btn-calcular").disabled = !(estado.origen && estado.destino);
+          });
+          caja.appendChild(b);
+        });
+        caja.hidden = false;
+      }).catch(function(){
+        caja.hidden = true;
+        hint.textContent = "";
+        mostrarError("No se pudo conectar con el buscador de lugares. Revisa tu conexión o escribe los valores de cada ruta a mano.");
+      });
+    }
+  }
+
+  /* ---------- cálculo de rutas (OSRM) ---------- */
+  $("btn-calcular").addEventListener("click", function(){
+    if(!estado.origen || !estado.destino) return;
+    limpiarError();
+    var btn = $("btn-calcular");
+    btn.disabled = true; btn.textContent = "Calculando…";
+
+    var o = estado.origen.coord, d = estado.destino.coord;
+    var url = OSRM + o[0] + "," + o[1] + ";" + d[0] + "," + d[1] +
+              "?alternatives=true&overview=full&geometries=geojson";
+
+    fetch(url).then(function(r){
+      if(r.status === 429) throw new Error("cuota");
+      if(!r.ok) throw new Error("http");
+      return r.json();
+    }).then(function(data){
+      if(!data || data.code !== "Ok" || !data.routes || !data.routes.length) throw new Error("sinruta");
+      limpiarCapas();
+
+      aplicarRuta(data.routes[0], "a", "Ruta principal");
+      dibujarRuta(data.routes[0].geometry, color("--route-a"));
+
+      if(data.routes.length > 1){
+        aplicarRuta(data.routes[1], "b", "Ruta alternativa");
+        dibujarRuta(data.routes[1].geometry, color("--route-b"));
+      } else {
+        $("nom-b").textContent = "Alternativa manual";
+        $("th-b").textContent  = "Alternativa manual";
+        mostrarError("El servicio encontró una sola ruta entre esos puntos. La ruta B quedó con los valores anteriores: edítala a mano para comparar.");
+      }
+
+      if(mapa && estado.capas.length){
+        try{ mapa.fitBounds(L.featureGroup(estado.capas).getBounds(), { padding:[28,28] }); }catch(e){}
+      }
+      render();
+    }).catch(function(err){
+      var m = {
+        cuota:"El servidor de rutas está saturado en este momento. Espera un minuto y vuelve a intentar.",
+        sinruta:"No se encontró una ruta por carretera entre esos dos puntos.",
+        http:"El servidor de rutas devolvió un error. Intenta de nuevo en unos segundos."
+      }[err.message] || "No se pudo conectar con el servidor de rutas. Puedes escribir distancia y velocidad a mano.";
+      mostrarError(m);
+    }).then(function(){
+      btn.disabled = false; btn.textContent = "Calcular rutas";
+    });
+  });
+
+  function aplicarRuta(ruta, cual, nombre){
+    var km = (ruta.distance || 0) / 1000;
+    var horas = (ruta.duration || 0) / 3600;
+    var fv = numVal($("fv"), 0.85);
+    var vel = horas > 0 ? (km / horas) * fv : 0;
+    $("d" + cual).value = km.toFixed(1);
+    $("v" + cual).value = vel.toFixed(1);
+    $("nom-" + cual).textContent = nombre;
+    $("th-" + cual).textContent  = nombre;
+  }
+
+  /* ---------- motor de cálculo ---------- */
+  function calcular(d, v, peaje, r, p){
+    var C = (d/100) * r, t = d/v;
+    return { d:d, v:v, peaje:peaje, r:r, C:C, t:t, E:C*p.fe, CL:C*p.precio + t*p.ch + peaje };
+  }
+  function pct(dif, base){
+    if(!isFinite(base) || base === 0) return "—";
+    var p = dif/base*100;
+    if(Math.abs(p) < 0.05) return "sin variación respecto de la ruta A";
+    return nf(Math.abs(p),1) + "% " + (p>0 ? "menos" : "más") + " que la ruta A";
+  }
+  function vehActual(){
+    for(var i=0;i<VEHICULOS.length;i++){ if(VEHICULOS[i].id === $("veh").value) return VEHICULOS[i]; }
+    return VEHICULOS[1];
+  }
+
+  function render(){
+    var veh = vehActual();
+    var p = { fe:numVal($("fe"),2.70), precio:numVal($("precio"),1050), ch:numVal($("ch"),8000), k:numVal($("k"),0.55) };
+
+    var carga = parseFloat($("carga").value);
+    $("carga").max = String(veh.cap);
+    if(carga > veh.cap){ carga = veh.cap; $("carga").value = String(carga); }
+    $("carga-out").textContent = nf(carga,0) + " t";
+    $("carga-hint").textContent = "Capacidad: " + veh.cap + " t · rendimiento base " + veh.r0 + " L/100 km";
+
+    var r = veh.r0 + p.k * carga;
+
+    var da=numVal($("da"),0), va=numVal($("va"),0), pa=numVal($("pa"),0);
+    var db=numVal($("db"),0), vb=numVal($("vb"),0), pb=numVal($("pb"),0);
+    var err = $("ruta-err");
+    if(da<=0 || va<=0 || db<=0 || vb<=0){
+      err.hidden = false;
+      err.textContent = "La distancia y la velocidad de ambas rutas deben ser mayores que cero.";
+      return;
+    }
+    err.hidden = true;
+
+    var A = calcular(da,va,pa,r,p), B = calcular(db,vb,pb,r,p);
+
+    var filas = [
+      { lab:"Rendimiento efectivo", uni:"L/100 km", a:r,    b:r,    dec:1, difTxt:"igual para ambas" },
+      { lab:"Distancia",            uni:"km",       a:A.d,  b:B.d,  dec:1 },
+      { lab:"Combustible",          uni:"L",        a:A.C,  b:B.C,  dec:1 },
+      { lab:"Emisiones",            uni:"kg CO₂e",  a:A.E,  b:B.E,  dec:1 },
+      { lab:"Tiempo",               uni:"h",        a:A.t,  b:B.t,  dec:2 },
+      { lab:"Costo logístico",      uni:"CLP",      a:A.CL, b:B.CL, dec:0, moneda:true }
+    ];
+    var tb = $("tbody"); tb.innerHTML = "";
+    filas.forEach(function(f){
+      var tr = document.createElement("tr");
+      var fa = f.moneda ? clp(f.a) : nf(f.a,f.dec);
+      var fb = f.moneda ? clp(f.b) : nf(f.b,f.dec);
+      var dif;
+      if(f.difTxt){ dif = f.difTxt; }
+      else {
+        var dd = f.a - f.b;
+        var abs = f.moneda ? clp(Math.abs(dd)) : nf(Math.abs(dd), f.dec);
+        dif = Math.abs(dd) < 1e-9 ? "sin diferencia" : abs + (dd>0 ? " menos en B" : " más en B");
+      }
+      tr.innerHTML = '<td>'+f.lab+' <span class="unidad">'+f.uni+'</span></td>' +
+        '<td class="'+(f.a<f.b?"mejor":"")+'">'+fa+'</td>' +
+        '<td class="'+(f.b<f.a?"mejor":"")+'">'+fb+'</td>' +
+        '<td>'+dif+'</td>';
+      tb.appendChild(tr);
+    });
+
+    var grupos = [
+      { tit:"Distancia (km)",      a:A.d,  b:B.d,  fmt:function(x){return nf(x,1)+" km";} },
+      { tit:"Combustible (L)",     a:A.C,  b:B.C,  fmt:function(x){return nf(x,1)+" L";} },
+      { tit:"Emisiones (kg CO₂e)", a:A.E,  b:B.E,  fmt:function(x){return nf(x,0)+" kg";} },
+      { tit:"Costo logístico",     a:A.CL, b:B.CL, fmt:clp }
+    ];
+    var cont = $("barras"); cont.innerHTML = "";
+    grupos.forEach(function(g){
+      var max = Math.max(g.a,g.b) || 1;
+      var div = document.createElement("div");
+      div.innerHTML = '<div class="bgrupo-tit">'+g.tit+'</div>' +
+        '<div class="brow"><span class="blabel">A</span><div class="btrack"><div class="bfill a" style="width:'+(g.a/max*100).toFixed(1)+'%"></div></div><span class="bval">'+g.fmt(g.a)+'</span></div>' +
+        '<div class="brow"><span class="blabel">B</span><div class="btrack"><div class="bfill b" style="width:'+(g.b/max*100).toFixed(1)+'%"></div></div><span class="bval">'+g.fmt(g.b)+'</span></div>';
+      cont.appendChild(div);
+    });
+
+    var dKm=A.d-B.d, dL=A.C-B.C, dE=A.E-B.E, dCL=A.CL-B.CL;
+    var kpis = [
+      { lab:"Kilómetros reducidos", val:nf(dKm,1)+" km", n:dKm, pie:pct(dKm,A.d),  form:"Δd = d_A − d_B" },
+      { lab:"Combustible reducido", val:nf(dL,1)+" L",   n:dL,  pie:pct(dL,A.C),   form:"ΔC = C_A − C_B" },
+      { lab:"kg CO₂e evitados",     val:nf(dE,1)+" kg",  n:dE,  pie:pct(dE,A.E),   form:"ΔE = ΔC · FE" },
+      { lab:"Ahorro en costo",      val:clp(dCL),        n:dCL, pie:pct(dCL,A.CL), form:"ΔCL = CL_A − CL_B" }
+    ];
+    var kc = $("kpis"); kc.innerHTML = "";
+    kpis.forEach(function(k){
+      var cls = Math.abs(k.n) < 1e-9 ? "" : (k.n > 0 ? "pos" : "neg");
+      var el = document.createElement("div");
+      el.className = "kpi";
+      el.innerHTML = '<div class="kpi-lab">'+k.lab+'</div><div class="kpi-val '+cls+'">'+k.val+
+        '</div><div class="kpi-pie">'+k.pie+'</div><div class="kpi-form">'+k.form+'</div>';
+      kc.appendChild(el);
+    });
+
+    var we=parseFloat($("we").value), wc=parseFloat($("wc").value), wt=parseFloat($("wt").value);
+    $("we-out").textContent=we+"%"; $("wc-out").textContent=wc+"%"; $("wt-out").textContent=wt+"%";
+    var suma = we+wc+wt;
+    if(suma === 0){ we=wc=wt=1; suma=3; }
+    var ne=we/suma, nc=wc/suma, nt=wt/suma;
+    $("peso-hint").textContent = "Pesos normalizados: emisiones "+nf(ne*100,0)+"%, costo "+nf(nc*100,0)+"%, tiempo "+nf(nt*100,0)+"%.";
+
+    function score(x,y){ var m=Math.min(x,y); return m<=0 ? 1 : m/x; }
+    var iA = ne*score(A.E,B.E) + nc*score(A.CL,B.CL) + nt*score(A.t,B.t);
+    var iB = ne*score(B.E,A.E) + nc*score(B.CL,A.CL) + nt*score(B.t,A.t);
+    $("indice").innerHTML = '<span class="ipill">Índice ruta A · <b>'+nf(iA,3)+'</b></span>' +
+                            '<span class="ipill">Índice ruta B · <b>'+nf(iB,3)+'</b></span>';
+
+    var gana = iB >= iA ? "B" : "A";
+    var nomGan = gana === "B" ? $("nom-b").textContent : $("nom-a").textContent;
+    var G = gana === "B" ? B : A, P = gana === "B" ? A : B;
+    var emisMenos = P.E - G.E, costoExtra = G.CL - P.CL, tiempoExtra = G.t - P.t;
+    var caro = costoExtra > 0.5;
+
+    var partes = [];
+    if(emisMenos > 0.05) partes.push("emite "+nf(emisMenos,1)+" kg CO₂e menos ("+nf(emisMenos/P.E*100,1)+"%)");
+    else if(emisMenos < -0.05) partes.push("emite "+nf(-emisMenos,1)+" kg CO₂e más");
+    else partes.push("emite prácticamente lo mismo");
+    if(costoExtra < -0.5) partes.push("cuesta "+clp(-costoExtra)+" menos");
+    else if(caro) partes.push("cuesta "+clp(costoExtra)+" más");
+    else partes.push("cuesta prácticamente lo mismo");
+    if(tiempoExtra > 0.01) partes.push("demora "+nf(tiempoExtra*60,0)+" min más");
+    else if(tiempoExtra < -0.01) partes.push("demora "+nf(-tiempoExtra*60,0)+" min menos");
+
+    $("ver-tit").textContent = "Ruta recomendada: " + nomGan;
+    $("ver-txt").textContent = "Frente a la otra alternativa, " + partes.join(", ") + ".";
+
+    var v = $("veredicto"), vex = $("ver-extra");
+    if(caro && emisMenos > 0.05){
+      v.className = "veredicto alerta"; vex.hidden = false;
+      vex.textContent = "La ruta más limpia no es la más barata. El sobrecosto es de "+clp(costoExtra)+
+        ", equivalente a "+clp(costoExtra/emisMenos)+" por cada kilogramo de CO₂e evitado. La decisión queda en manos de la empresa.";
+    } else if(caro){
+      v.className = "veredicto alerta"; vex.hidden = false;
+      vex.textContent = "La ruta recomendada por el índice ponderado tiene un sobrecosto de "+clp(costoExtra)+
+        " sin reducir emisiones. Revisa los pesos asignados a cada criterio.";
+    } else {
+      v.className = "veredicto ok"; vex.hidden = true;
+    }
+  }
+
+  /* ---------- arranque ---------- */
+  VEHICULOS.forEach(function(v){
+    var o = document.createElement("option");
+    o.value = v.id; o.textContent = v.nombre;
+    $("veh").appendChild(o);
+  });
+  $("veh").value = "v2";
+
+  ["carga","da","va","pa","db","vb","pb","fe","precio","ch","k","we","wc","wt"].forEach(function(id){
+    $(id).addEventListener("input", render);
+  });
+  $("veh").addEventListener("change", render);
+
+  iniciarMapa();
+  montarBuscador("origen","sug-origen","hint-origen","origen");
+  montarBuscador("destino","sug-destino","hint-destino","destino");
+  render();
+})();
+</script>
+</body>
+</html>
