@@ -9,26 +9,14 @@
 <style>
 :root{
   color-scheme: light;
-  --bg:#f4f5f9;
-  --card:#ffffff;
-  --soft:#f1f2f7;
-  --soft-2:#e7e9f2;
-  --ink:#1a1b2e;
-  --ink-2:#5f6481;
-  --ink-3:#9397ae;
-  --line:#e8eaf2;
-
-  --violeta:#6a4df0;
-  --violeta-2:#8b5cf6;
-  --violeta-soft:#efecfe;
-
-  --ruta-a:#ea6a1f;  --ruta-a-soft:#fdeee3;
-  --ruta-b:#4f46e5;  --ruta-b-soft:#eceaff;
-
-  --ok:#07875a;      --ok-soft:#e2f5ed;
-  --alerta:#b26a04;  --alerta-soft:#fdf0d9;
-  --malo:#cf3838;    --malo-soft:#fceaea;
-
+  --bg:#f4f5f9; --card:#ffffff; --soft:#f1f2f7; --soft-2:#e7e9f2;
+  --ink:#1a1b2e; --ink-2:#5f6481; --ink-3:#9397ae; --line:#e8eaf2;
+  --violeta:#6a4df0; --violeta-2:#8b5cf6; --violeta-soft:#efecfe;
+  --ruta-a:#ea6a1f; --ruta-a-soft:#fdeee3;
+  --ruta-b:#4f46e5; --ruta-b-soft:#eceaff;
+  --ok:#07875a; --ok-soft:#e2f5ed;
+  --alerta:#b26a04; --alerta-soft:#fdf0d9;
+  --malo:#cf3838; --malo-soft:#fceaea;
   --radio:18px;
   --sombra:0 1px 2px rgba(22,24,48,.04), 0 6px 18px rgba(22,24,48,.06);
   --fuente:"Plus Jakarta Sans","Segoe UI",system-ui,sans-serif;
@@ -42,35 +30,42 @@ p{margin:0}
 .num{font-family:var(--mono); font-variant-numeric:tabular-nums}
 .wrap{max-width:980px; margin:0 auto; padding:0 20px 72px}
 
-/* ---------- barra superior ---------- */
+/* barra superior */
 .topbar{background:var(--card); border-bottom:1px solid var(--line)}
 .topbar-in{max-width:980px; margin:0 auto; padding:16px 20px; display:flex; align-items:center; gap:12px}
 .logo{width:40px; height:40px; border-radius:12px; flex:none; display:flex; align-items:center; justify-content:center;
   background:linear-gradient(135deg,var(--violeta),var(--violeta-2)); color:#fff}
 .logo svg{width:22px; height:22px}
-.topbar h1{font-size:16.5px; font-weight:700; line-height:1.25}
+.topbar h1{font-size:16.5px; line-height:1.25}
 .topbar p{font-size:12.5px; color:var(--ink-3)}
 .pastilla{margin-left:auto; font-size:11.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
   color:var(--violeta); background:var(--violeta-soft); padding:6px 12px; border-radius:999px}
 
-/* ---------- hero ---------- */
-.hero{
-  margin-top:26px; border-radius:24px; padding:28px;
+/* pestañas */
+.tabs{display:flex; gap:8px; margin-top:24px; background:var(--soft); padding:5px; border-radius:14px; width:fit-content; max-width:100%; flex-wrap:wrap}
+.tab{font-family:var(--fuente); font-size:14.5px; font-weight:600; color:var(--ink-2); background:none;
+  border:none; border-radius:10px; padding:9px 18px; cursor:pointer}
+.tab[aria-selected="true"]{background:var(--card); color:var(--ink); box-shadow:var(--sombra)}
+.tab:focus-visible{outline:2px solid var(--violeta); outline-offset:2px}
+
+/* hero */
+.hero{margin-top:20px; border-radius:24px; padding:28px; color:#fff;
   background:linear-gradient(135deg,var(--violeta) 0%,var(--violeta-2) 100%);
-  color:#fff; box-shadow:0 10px 30px rgba(106,77,240,.26);
-}
+  box-shadow:0 10px 30px rgba(106,77,240,.26)}
 .hero-lab{display:flex; align-items:center; gap:8px; font-size:12.5px; font-weight:600;
   letter-spacing:.05em; text-transform:uppercase; color:rgba(255,255,255,.82)}
 .hero-lab svg{width:16px; height:16px}
-.hero h2{font-size:clamp(24px,4.4vw,32px); font-weight:800; margin-top:10px; line-height:1.15}
-.hero-txt{margin-top:10px; font-size:15px; color:rgba(255,255,255,.9); max-width:56ch}
+.hero h2{font-size:clamp(23px,4.2vw,31px); font-weight:800; margin-top:10px; line-height:1.15}
+.hero-via{margin-top:7px; font-size:13.5px; color:rgba(255,255,255,.78)}
+.hero-txt{margin-top:12px; font-size:15px; color:rgba(255,255,255,.92); max-width:56ch}
 .hero-stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin-top:22px}
 .hstat{background:rgba(255,255,255,.16); border-radius:14px; padding:14px 16px; min-width:0}
 .hstat-lab{display:flex; align-items:center; gap:7px; font-size:12px; color:rgba(255,255,255,.85); font-weight:500}
 .hstat-lab svg{width:15px; height:15px; flex:none}
 .hstat-val{font-family:var(--mono); font-size:21px; font-weight:600; margin-top:5px; letter-spacing:-.02em}
+.hero-aviso{margin-top:16px; background:rgba(255,255,255,.18); border-radius:12px; padding:13px 15px; font-size:13.5px}
 
-/* ---------- tarjetas ---------- */
+/* tarjetas y secciones */
 .card{background:var(--card); border-radius:var(--radio); padding:22px; box-shadow:var(--sombra); min-width:0}
 .sec{margin-top:36px}
 .sec-head{display:flex; align-items:center; gap:11px; margin-bottom:6px}
@@ -81,7 +76,7 @@ p{margin:0}
 .sec-sub{color:var(--ink-2); font-size:14px; margin:0 0 18px; max-width:68ch; padding-left:45px}
 @media (max-width:560px){ .sec-sub{padding-left:0} }
 
-/* ---------- formulario ---------- */
+/* formulario */
 label{display:block; font-size:12px; font-weight:600; letter-spacing:.03em; color:var(--ink-2);
   text-transform:uppercase; margin-bottom:6px}
 input[type=text],input[type=number],select{
@@ -92,7 +87,7 @@ input:hover,select:hover{background:var(--soft-2)}
 input:focus,select:focus{background:var(--card); border-color:var(--violeta); outline:none}
 input[type=range]{width:100%; accent-color:var(--violeta)}
 .slider-row{display:flex; align-items:center; gap:14px}
-.slider-val{font-family:var(--mono); font-size:15px; font-weight:600; min-width:56px; text-align:right; flex:none}
+.slider-val{font-family:var(--mono); font-size:15px; font-weight:600; min-width:62px; text-align:right; flex:none}
 .hint{display:block; font-size:12.5px; color:var(--ink-3); margin-top:7px}
 .error{font-size:13.5px; color:var(--malo); font-weight:500}
 
@@ -103,17 +98,16 @@ input[type=range]{width:100%; accent-color:var(--violeta)}
 .boton svg{width:18px; height:18px}
 .boton:disabled{opacity:.42; cursor:default; box-shadow:none}
 .boton:hover:not(:disabled){filter:brightness(1.07)}
-.boton:focus-visible{outline:3px solid var(--violeta-soft); outline-offset:2px}
+.boton.fantasma{background:var(--card); color:var(--violeta); box-shadow:var(--sombra); margin-top:28px}
 
 /* origen / destino */
-.od{display:flex; flex-direction:column; gap:16px; position:relative}
+.od{display:flex; flex-direction:column; gap:16px}
 .od-row{display:grid; grid-template-columns:34px minmax(0,1fr); gap:12px; align-items:center}
 .od-ico{width:34px; height:34px; border-radius:11px; display:flex; align-items:center; justify-content:center; flex:none}
 .od-ico svg{width:17px; height:17px}
 .od-ico.o{background:var(--ruta-a-soft); color:var(--ruta-a)}
 .od-ico.d{background:var(--ruta-b-soft); color:var(--ruta-b)}
 .od-campo{position:relative; min-width:0}
-
 .sugerencias{position:absolute; top:calc(100% + 6px); left:0; right:0; z-index:1200; background:var(--card);
   border-radius:14px; max-height:260px; overflow-y:auto; box-shadow:0 10px 28px rgba(22,24,48,.16); padding:6px}
 .sugerencias button{display:block; width:100%; text-align:left; background:none; border:none; border-radius:10px;
@@ -123,14 +117,15 @@ input[type=range]{width:100%; accent-color:var(--violeta)}
 .sugerencias button span{color:var(--ink-3); font-size:12.5px}
 
 .divisor{height:1px; background:var(--line); margin:22px 0}
-.dos{display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:20px}
+.dos{display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:20px}
 
 /* mapa */
-#mapa{height:360px; border-radius:var(--radio); background:var(--soft-2); box-shadow:var(--sombra)}
-.leyenda{display:flex; flex-wrap:wrap; gap:18px; margin-top:14px; font-size:13px; color:var(--ink-2); font-weight:500}
+#mapa{height:400px; border-radius:var(--radio); background:var(--soft-2); box-shadow:var(--sombra)}
+.leyenda{display:flex; flex-wrap:wrap; gap:16px; margin-top:14px; font-size:13px; color:var(--ink-2); font-weight:500}
 .leyenda span{display:flex; align-items:center; gap:8px}
 .swatch{width:20px; height:4px; border-radius:3px; flex:none}
-.sw-a{background:var(--ruta-a)} .sw-b{background:var(--ruta-b)}
+.marca-rec{font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em;
+  background:var(--ok-soft); color:var(--ok); padding:3px 9px; border-radius:999px}
 .aviso{border-radius:14px; padding:14px 16px; font-size:13.5px; margin-top:16px;
   background:var(--malo-soft); color:var(--malo); font-weight:500}
 
@@ -140,6 +135,7 @@ input[type=range]{width:100%; accent-color:var(--violeta)}
 .ruta::before{content:""; position:absolute; left:0; top:0; bottom:0; width:5px}
 .ruta.a::before{background:var(--ruta-a)}
 .ruta.b::before{background:var(--ruta-b)}
+.ruta.rec{box-shadow:0 0 0 2px var(--ok), var(--sombra)}
 .ruta-head{display:flex; align-items:center; gap:11px; margin-bottom:18px}
 .ruta-ico{width:36px; height:36px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex:none}
 .ruta-ico svg{width:18px; height:18px}
@@ -199,9 +195,8 @@ td.dif{color:var(--ink-2); font-size:13px}
 .veredicto.alerta .ver-ico{background:var(--alerta)}
 .ver-tit{font-size:18px; font-weight:700}
 .veredicto.ok .ver-tit{color:var(--ok)} .veredicto.alerta .ver-tit{color:var(--alerta)}
-.ver-txt{margin-top:12px; font-size:14.5px; color:var(--ink)}
+.ver-txt{margin-top:12px; font-size:14.5px}
 .ver-extra{margin-top:14px; padding:14px 16px; border-radius:12px; background:rgba(255,255,255,.65); font-size:13.5px; color:var(--ink-2)}
-
 .pesos{display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:22px; margin-top:20px}
 .indice{display:flex; flex-wrap:wrap; gap:12px; margin-top:20px}
 .ipill{font-size:13px; font-weight:500; padding:9px 15px; border-radius:999px; background:var(--card); box-shadow:var(--sombra)}
@@ -245,182 +240,213 @@ footer p{margin-bottom:7px}
 
 <div class="wrap">
 
-  <div class="hero">
-    <span class="hero-lab">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5l2.6 5.6 6 .8-4.4 4.2 1.1 6.1L12 16.3 6.7 19.2l1.1-6.1L3.4 8.9l6-.8z"></path></svg>
-      Ruta recomendada
-    </span>
-    <h2 id="hero-ruta">—</h2>
-    <p class="hero-txt" id="hero-txt">—</p>
-    <div class="hero-stats" id="hero-stats"></div>
+  <div class="tabs" role="tablist">
+    <button class="tab" id="tab-resumen" role="tab" aria-selected="true" aria-controls="vista-resumen" type="button">Resumen</button>
+    <button class="tab" id="tab-detalle" role="tab" aria-selected="false" aria-controls="vista-detalle" type="button">Análisis detallado</button>
   </div>
 
-  <section class="sec">
-    <div class="sec-head">
-      <span class="sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span>
-      <h2>Planificar comparación</h2>
-    </div>
-    <p class="sec-sub">Escribe el origen y el destino. Las sugerencias aparecen mientras escribes y el servicio calcula dos alternativas sobre la red vial real.</p>
+  <!-- ===================== RESUMEN ===================== -->
+  <div id="vista-resumen" role="tabpanel" aria-labelledby="tab-resumen">
 
-    <div class="dos" style="align-items:start">
-      <div class="card">
-        <div class="od">
-          <div class="od-row">
-            <span class="od-ico o" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span>
-            <div class="od-campo">
-              <label for="origen">Origen</label>
-              <input type="text" id="origen" placeholder="Antofagasta" autocomplete="off">
-              <div class="sugerencias" id="sug-origen" hidden></div>
+    <div class="hero">
+      <span class="hero-lab">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5l2.6 5.6 6 .8-4.4 4.2 1.1 6.1L12 16.3 6.7 19.2l1.1-6.1L3.4 8.9l6-.8z"></path></svg>
+        Ruta recomendada
+      </span>
+      <h2 id="hero-ruta">—</h2>
+      <p class="hero-via" id="hero-via"></p>
+      <p class="hero-txt" id="hero-txt">—</p>
+      <div class="hero-stats" id="hero-stats"></div>
+      <div class="hero-aviso" id="hero-aviso" hidden></div>
+    </div>
+
+    <section class="sec">
+      <div class="sec-head">
+        <span class="sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span>
+        <h2>Planificar comparación</h2>
+      </div>
+      <p class="sec-sub">Escribe el origen y el destino, elige el vehículo y la carga. Las sugerencias aparecen mientras escribes.</p>
+
+      <div class="dos" style="align-items:start">
+        <div class="card">
+          <div class="od">
+            <div class="od-row">
+              <span class="od-ico o" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span>
+              <div class="od-campo">
+                <label for="origen">Origen</label>
+                <input type="text" id="origen" placeholder="Antofagasta" autocomplete="off">
+                <div class="sugerencias" id="sug-origen" hidden></div>
+              </div>
+            </div>
+            <div class="od-row">
+              <span class="od-ico d" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V4"></path><path d="M4 5h11l-1.6 3.4L15 12H4"></path></svg></span>
+              <div class="od-campo">
+                <label for="destino">Destino</label>
+                <input type="text" id="destino" placeholder="Calama" autocomplete="off">
+                <div class="sugerencias" id="sug-destino" hidden></div>
+              </div>
             </div>
           </div>
-          <div class="od-row">
-            <span class="od-ico d" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V4"></path><path d="M4 5h11l-1.6 3.4L15 12H4"></path></svg></span>
-            <div class="od-campo">
-              <label for="destino">Destino</label>
-              <input type="text" id="destino" placeholder="Calama" autocomplete="off">
-              <div class="sugerencias" id="sug-destino" hidden></div>
+
+          <div class="divisor"></div>
+
+          <div style="margin-bottom:18px">
+            <label for="veh">Vehículo</label>
+            <select id="veh"></select>
+            <span class="hint" id="veh-hint"></span>
+          </div>
+
+          <div id="personalizado" hidden style="margin-bottom:18px">
+            <div class="params-grid">
+              <div><label for="pz-r0">Consumo (L/100 km)</label><input type="number" id="pz-r0" min="1" step="0.1" value="9"></div>
+              <div><label for="pz-cap">Capacidad de carga (t)</label><input type="number" id="pz-cap" min="0.1" step="0.1" value="1"></div>
+              <div><label for="pz-comb">Combustible</label>
+                <select id="pz-comb"><option value="diesel">Diésel</option><option value="bencina">Bencina</option></select></div>
             </div>
           </div>
-        </div>
 
-        <div class="divisor"></div>
-
-        <div style="margin-bottom:20px">
-          <label for="veh">Vehículo</label>
-          <select id="veh"></select>
-        </div>
-        <div>
-          <label for="carga">Carga transportada</label>
-          <div class="slider-row">
-            <input type="range" id="carga" min="1" max="28" step="1" value="12">
-            <span class="slider-val num" id="carga-out">12 t</span>
+          <div>
+            <label for="carga">Carga transportada</label>
+            <div class="slider-row">
+              <input type="range" id="carga" min="0" max="12" step="1" value="12">
+              <span class="slider-val num" id="carga-out">12 t</span>
+            </div>
+            <span class="hint" id="carga-hint"></span>
           </div>
-          <span class="hint" id="carga-hint"></span>
+
+          <button class="boton" id="btn-calcular" type="button" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+            Calcular rutas
+          </button>
         </div>
 
-        <button class="boton" id="btn-calcular" type="button" disabled>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
-          Calcular rutas
-        </button>
-      </div>
-
-      <div style="min-width:0">
-        <div id="mapa"></div>
-        <div class="leyenda">
-          <span><i class="swatch sw-a"></i> Ruta A · referencia</span>
-          <span><i class="swatch sw-b"></i> Ruta B · alternativa</span>
-        </div>
-        <div class="aviso" id="error-api" hidden></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="sec">
-    <div class="sec-head">
-      <span class="sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 20l-5.5 2V6L9 4m0 16l6-2m-6 2V4m6 14l5.5 2V4L15 6m0 12V6M9 4l6 2"></path></svg></span>
-      <h2>Datos de cada ruta</h2>
-    </div>
-    <p class="sec-sub">El servicio entrega distancia y tiempo. Los peajes se ingresan a mano porque el servicio no los informa. Todos los campos son editables.</p>
-
-    <div class="rutas">
-      <div class="card ruta a">
-        <div class="ruta-head">
-          <span class="ruta-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20l4-16"></path><path d="M17 20l4-16"></path><path d="M12 5v2m0 4v2m0 4v2"></path></svg></span>
-          <div style="min-width:0"><strong id="nom-a">Ruta de referencia</strong><em>Alternativa A</em></div>
-        </div>
-        <div class="ruta-campos">
-          <div><label for="da">Distancia (km)</label><input type="number" id="da" min="1" step="0.1" value="215"></div>
-          <div><label for="va">Velocidad (km/h)</label><input type="number" id="va" min="1" step="0.1" value="72"></div>
-          <div><label for="pa">Peajes (CLP)</label><input type="number" id="pa" min="0" step="100" value="2600"></div>
+        <div style="min-width:0">
+          <div id="mapa"></div>
+          <div class="leyenda" id="leyenda"></div>
+          <div class="aviso" id="error-api" hidden></div>
         </div>
       </div>
-      <div class="card ruta b">
-        <div class="ruta-head">
-          <span class="ruta-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20l4-16"></path><path d="M17 20l4-16"></path><path d="M12 5v2m0 4v2m0 4v2"></path></svg></span>
-          <div style="min-width:0"><strong id="nom-b">Ruta alternativa</strong><em>Alternativa B</em></div>
+
+      <button class="boton fantasma" id="btn-detalle" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10"></path><path d="M10 20V4"></path><path d="M16 20v-7"></path><path d="M22 20H2"></path></svg>
+        Ver análisis detallado
+      </button>
+    </section>
+  </div>
+
+  <!-- ===================== DETALLE ===================== -->
+  <div id="vista-detalle" role="tabpanel" aria-labelledby="tab-detalle" hidden>
+
+    <section class="sec" style="margin-top:24px">
+      <div class="sec-head">
+        <span class="sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 20l-5.5 2V6L9 4m0 16l6-2m-6 2V4m6 14l5.5 2V4L15 6m0 12V6M9 4l6 2"></path></svg></span>
+        <h2>Datos de cada ruta</h2>
+      </div>
+      <p class="sec-sub">La distancia y la velocidad las entrega el servicio de rutas. Los peajes se ingresan a mano porque ningún servicio público los informa todavía. Todos los campos son editables.</p>
+
+      <div class="rutas">
+        <div class="card ruta a" id="card-a">
+          <div class="ruta-head">
+            <span class="ruta-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20l4-16"></path><path d="M17 20l4-16"></path><path d="M12 5v2m0 4v2m0 4v2"></path></svg></span>
+            <div style="min-width:0"><strong id="nom-a">Ruta de referencia</strong><em id="em-a">Alternativa A</em></div>
+          </div>
+          <div class="ruta-campos">
+            <div><label for="da">Distancia (km)</label><input type="number" id="da" min="1" step="0.1" value="215"></div>
+            <div><label for="va">Velocidad (km/h)</label><input type="number" id="va" min="1" step="0.1" value="72"></div>
+            <div><label for="pa">Peajes (CLP)</label><input type="number" id="pa" min="0" step="100" value="2600"></div>
+          </div>
         </div>
-        <div class="ruta-campos">
-          <div><label for="db">Distancia (km)</label><input type="number" id="db" min="1" step="0.1" value="258"></div>
-          <div><label for="vb">Velocidad (km/h)</label><input type="number" id="vb" min="1" step="0.1" value="80"></div>
-          <div><label for="pb">Peajes (CLP)</label><input type="number" id="pb" min="0" step="100" value="5200"></div>
+        <div class="card ruta b" id="card-b">
+          <div class="ruta-head">
+            <span class="ruta-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20l4-16"></path><path d="M17 20l4-16"></path><path d="M12 5v2m0 4v2m0 4v2"></path></svg></span>
+            <div style="min-width:0"><strong id="nom-b">Ruta alternativa</strong><em id="em-b">Alternativa B</em></div>
+          </div>
+          <div class="ruta-campos">
+            <div><label for="db">Distancia (km)</label><input type="number" id="db" min="1" step="0.1" value="258"></div>
+            <div><label for="vb">Velocidad (km/h)</label><input type="number" id="vb" min="1" step="0.1" value="80"></div>
+            <div><label for="pb">Peajes (CLP)</label><input type="number" id="pb" min="0" step="100" value="5200"></div>
+          </div>
         </div>
       </div>
-    </div>
-    <p class="error" id="ruta-err" hidden style="margin-top:14px"></p>
-  </section>
+      <p class="error" id="ruta-err" hidden style="margin-top:14px"></p>
+    </section>
 
-  <section class="sec">
-    <div class="sec-head">
-      <span class="sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10"></path><path d="M10 20V4"></path><path d="M16 20v-7"></path><path d="M22 20H2"></path></svg></span>
-      <h2>Comparación de variables</h2>
-    </div>
-    <p class="sec-sub">El rendimiento del vehículo se corrige por la carga antes de calcular el consumo: <span class="num">r = r₀ + k · q</span>. Sobre ese valor se obtienen combustible, tiempo y costo.</p>
-
-    <div class="tabla-box">
-      <table>
-        <thead><tr><th>Magnitud</th><th class="ca" id="th-a">Ruta A</th><th class="cb" id="th-b">Ruta B</th><th>Diferencia</th></tr></thead>
-        <tbody id="tbody"></tbody>
-      </table>
-    </div>
-    <div class="barras" id="barras"></div>
-  </section>
-
-  <section class="sec">
-    <div class="sec-head">
-      <span class="sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15 5 17 4 19 2c1 2 2 4.2 2 8a7 7 0 0 1-10 10z"></path><path d="M2 21c0-3 1.9-5.9 4.5-7.5"></path></svg></span>
-      <h2>Emisiones e indicadores</h2>
-    </div>
-    <p class="sec-sub">Los cuatro indicadores comparan la ruta alternativa contra la de referencia. Un valor positivo significa que la alternativa mejora respecto de la ruta A.</p>
-    <div class="kpis" id="kpis"></div>
-  </section>
-
-  <section class="sec">
-    <div class="sec-head">
-      <span class="sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="6"></circle><path d="M8.5 14L7 22l5-2.6L17 22l-1.5-8"></path></svg></span>
-      <h2>Recomendación de ruta</h2>
-    </div>
-    <p class="sec-sub">Cada criterio se normaliza respecto de la mejor alternativa y se pondera. Los pesos son configurables: una empresa con compromisos de carbono y otra con márgenes estrechos no deberían recibir la misma recomendación.</p>
-
-    <div class="veredicto ok" id="veredicto">
-      <div class="ver-head">
-        <span class="ver-ico" aria-hidden="true" id="ver-ico"></span>
-        <span class="ver-tit" id="ver-tit">—</span>
+    <section class="sec">
+      <div class="sec-head">
+        <span class="sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10"></path><path d="M10 20V4"></path><path d="M16 20v-7"></path><path d="M22 20H2"></path></svg></span>
+        <h2>Comparación de variables</h2>
       </div>
-      <p class="ver-txt" id="ver-txt">—</p>
-      <div class="ver-extra" id="ver-extra" hidden></div>
-    </div>
+      <p class="sec-sub">El rendimiento del vehículo se corrige por la carga antes de calcular el consumo: <span class="num">r = r₀ + k · q</span>.</p>
+      <div class="tabla-box">
+        <table>
+          <thead><tr><th>Magnitud</th><th class="ca" id="th-a">Ruta A</th><th class="cb" id="th-b">Ruta B</th><th>Diferencia</th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <div class="barras" id="barras"></div>
+    </section>
 
-    <div class="indice" id="indice"></div>
+    <section class="sec">
+      <div class="sec-head">
+        <span class="sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15 5 17 4 19 2c1 2 2 4.2 2 8a7 7 0 0 1-10 10z"></path><path d="M2 21c0-3 1.9-5.9 4.5-7.5"></path></svg></span>
+        <h2>Emisiones e indicadores</h2>
+      </div>
+      <p class="sec-sub">Los cuatro indicadores comparan la ruta alternativa contra la de referencia. Un valor positivo significa que la alternativa mejora respecto de la ruta A.</p>
+      <div class="kpis" id="kpis"></div>
+    </section>
 
-    <div class="pesos">
-      <div><label for="we">Peso · emisiones</label>
-        <div class="slider-row"><input type="range" id="we" min="0" max="100" step="5" value="50"><span class="slider-val num" id="we-out">50%</span></div></div>
-      <div><label for="wc">Peso · costo</label>
-        <div class="slider-row"><input type="range" id="wc" min="0" max="100" step="5" value="30"><span class="slider-val num" id="wc-out">30%</span></div></div>
-      <div><label for="wt">Peso · tiempo</label>
-        <div class="slider-row"><input type="range" id="wt" min="0" max="100" step="5" value="20"><span class="slider-val num" id="wt-out">20%</span></div></div>
-    </div>
-    <span class="hint" id="peso-hint" style="margin-top:14px"></span>
+    <section class="sec">
+      <div class="sec-head">
+        <span class="sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="6"></circle><path d="M8.5 14L7 22l5-2.6L17 22l-1.5-8"></path></svg></span>
+        <h2>Recomendación de ruta</h2>
+      </div>
+      <p class="sec-sub">Cada criterio se normaliza respecto de la mejor alternativa y se pondera. Los pesos son configurables: una empresa con compromisos de carbono y otra con márgenes estrechos no deberían recibir la misma recomendación.</p>
 
-    <details class="params">
-      <summary>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"></path></svg>
-        Parámetros y factores de referencia
-      </summary>
-      <div class="params-body">
-        <div class="params-grid">
-          <div><label for="fe">Factor emisión (kg CO₂e/L)</label><input type="number" id="fe" min="0" step="0.01" value="2.70"></div>
-          <div><label for="precio">Precio diésel (CLP/L)</label><input type="number" id="precio" min="0" step="10" value="1050"></div>
-          <div><label for="ch">Costo hora conductor (CLP/h)</label><input type="number" id="ch" min="0" step="500" value="8000"></div>
-          <div><label for="k">Penalización carga (L/100 km · t)</label><input type="number" id="k" min="0" step="0.05" value="0.55"></div>
-          <div><label for="fv">Factor velocidad camión</label><input type="number" id="fv" min="0.4" max="1" step="0.01" value="0.85"></div>
+      <div class="veredicto ok" id="veredicto">
+        <div class="ver-head">
+          <span class="ver-ico" aria-hidden="true" id="ver-ico"></span>
+          <span class="ver-tit" id="ver-tit">—</span>
         </div>
-        <p class="fuente"><b>Factor de emisión.</b> HuellaChile (Ministerio del Medio Ambiente) publica del orden de 2,71 kg CO₂e por litro de diésel; DEFRA 2025 publica 2,66 kg CO₂e/L para diésel mineral. Se adopta 2,70 como valor de trabajo. Falta confirmar el factor de fuentes móviles de la tabla oficial de HuellaChile.</p>
-        <p class="fuente"><b>Precio del diésel.</b> Parámetro volátil durante 2026. El valor por defecto es referencial y debe tomarse del informe semanal de la Comisión Nacional de Energía.</p>
-        <p class="fuente"><b>Costo hora conductor, rendimiento base, penalización por carga y factor de velocidad.</b> Supuestos del grupo, pendientes de calibración con fichas técnicas y datos del sector. El servicio de rutas calcula tiempos de automóvil; el factor de velocidad los ajusta a camión.</p>
+        <p class="ver-txt" id="ver-txt">—</p>
+        <div class="ver-extra" id="ver-extra" hidden></div>
       </div>
-    </details>
-  </section>
+
+      <div class="indice" id="indice"></div>
+
+      <div class="pesos">
+        <div><label for="we">Peso · emisiones</label>
+          <div class="slider-row"><input type="range" id="we" min="0" max="100" step="5" value="50"><span class="slider-val num" id="we-out">50%</span></div></div>
+        <div><label for="wc">Peso · costo</label>
+          <div class="slider-row"><input type="range" id="wc" min="0" max="100" step="5" value="30"><span class="slider-val num" id="wc-out">30%</span></div></div>
+        <div><label for="wt">Peso · tiempo</label>
+          <div class="slider-row"><input type="range" id="wt" min="0" max="100" step="5" value="20"><span class="slider-val num" id="wt-out">20%</span></div></div>
+      </div>
+      <span class="hint" id="peso-hint" style="margin-top:14px"></span>
+
+      <details class="params">
+        <summary>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"></path></svg>
+          Parámetros y factores de referencia
+        </summary>
+        <div class="params-body">
+          <div class="params-grid">
+            <div><label for="fe-d">Factor emisión diésel (kg CO₂e/L)</label><input type="number" id="fe-d" min="0" step="0.01" value="2.70"></div>
+            <div><label for="fe-b">Factor emisión bencina (kg CO₂e/L)</label><input type="number" id="fe-b" min="0" step="0.01" value="2.31"></div>
+            <div><label for="pr-d">Precio diésel (CLP/L)</label><input type="number" id="pr-d" min="0" step="10" value="1050"></div>
+            <div><label for="pr-b">Precio bencina (CLP/L)</label><input type="number" id="pr-b" min="0" step="10" value="1290"></div>
+            <div><label for="ch">Costo hora conductor (CLP/h)</label><input type="number" id="ch" min="0" step="500" value="8000"></div>
+            <div><label for="k">Penalización carga (L/100 km · t)</label><input type="number" id="k" min="0" step="0.05" value="0.55"></div>
+            <div><label for="fv">Factor velocidad camión</label><input type="number" id="fv" min="0.4" max="1" step="0.01" value="0.85"></div>
+          </div>
+          <p class="fuente"><b>Factores de emisión.</b> Para diésel, HuellaChile (Ministerio del Medio Ambiente) publica del orden de 2,71 kg CO₂e por litro y DEFRA 2025 publica 2,66 kg CO₂e/L para diésel mineral; se adopta 2,70. Para bencina se adopta 2,31 kg CO₂e/L. Ambos valores deben confirmarse con la tabla de fuentes móviles de HuellaChile.</p>
+          <p class="fuente"><b>Precios de combustible.</b> Parámetros volátiles durante 2026. Los valores por defecto son referenciales y deben tomarse del informe semanal de la Comisión Nacional de Energía.</p>
+          <p class="fuente"><b>Catálogo de vehículos.</b> Los consumos del catálogo son valores referenciales por categoría. En la versión final se cargan desde la base de etiquetado de eficiencia energética vehicular del Ministerio de Energía, que publica rendimiento y emisiones por modelo.</p>
+          <p class="fuente"><b>Peajes.</b> No existe todavía un servicio público que entregue la tarifa de peaje de una ruta. El Portal Único de Tarifas ordenado por el MOP está reglamentado pero aún no opera. Mientras tanto se ingresan a mano; la alternativa es construir una tabla propia con las tarifas publicadas por cada concesionaria.</p>
+          <p class="fuente"><b>Costo hora conductor, penalización por carga y factor de velocidad.</b> Supuestos del grupo, pendientes de calibración. El servicio de rutas calcula tiempos de automóvil; el factor de velocidad los ajusta a camión.</p>
+        </div>
+      </details>
+    </section>
+  </div>
 
   <footer>
     <p>Prototipo de la propuesta <i>Plataforma de comparación y optimización de rutas logísticas</i>.</p>
@@ -448,30 +474,58 @@ footer p{margin-bottom:7px}
            'stroke-linecap="round" stroke-linejoin="round">' + d + '</svg>';
   }
   var ICO = {
-    ruta:   svg('<path d="M3 20l4-16"></path><path d="M17 20l4-16"></path><path d="M12 5v2m0 4v2m0 4v2"></path>'),
     gota:   svg('<path d="M12 3s6 6.4 6 10.4A6 6 0 0 1 6 13.4C6 9.4 12 3 12 3z"></path>'),
     hoja:   svg('<path d="M11 20A7 7 0 0 1 9.8 6.1C15 5 17 4 19 2c1 2 2 4.2 2 8a7 7 0 0 1-10 10z"></path><path d="M2 21c0-3 1.9-5.9 4.5-7.5"></path>'),
-    reloj:  svg('<circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3.2 2"></path>'),
     plata:  svg('<rect x="2.5" y="6" width="19" height="12" rx="3"></rect><circle cx="12" cy="12" r="2.6"></circle><path d="M6 12h.01M18 12h.01"></path>'),
     medida: svg('<rect x="2" y="7" width="20" height="10" rx="2.5"></rect><path d="M7 7v3M11 7v4M15 7v3M19 7v4"></path>'),
     ok:     svg('<path d="M20 6.5L9.6 17 4 11.4"></path>'),
     alerta: svg('<path d="M12 3.5l9.5 16.5H2.5z"></path><path d="M12 10v4"></path><path d="M12 17.2h.01"></path>')
   };
 
-  var VEHICULOS = [
-    { id:"v1", nombre:"Camión 3/4 — hasta 5 t",          cap:5,  r0:14 },
-    { id:"v2", nombre:"Camión simple — hasta 12 t",      cap:12, r0:22 },
-    { id:"v3", nombre:"Camión de dos ejes — hasta 18 t", cap:18, r0:26 },
-    { id:"v4", nombre:"Tractocamión — hasta 28 t",       cap:28, r0:30 }
+  /* catalogo: r0 en L/100 km, cap en toneladas */
+  var GRUPOS = [
+    { grupo:"Autos y camionetas", items:[
+      { id:"a1", nombre:"Auto compacto — bencina",      comb:"bencina", r0:6.5,  cap:0.4 },
+      { id:"a2", nombre:"Auto mediano — bencina",       comb:"bencina", r0:8.0,  cap:0.5 },
+      { id:"a3", nombre:"Auto mediano — diésel",        comb:"diesel",  r0:6.0,  cap:0.5 },
+      { id:"a4", nombre:"SUV — bencina",                comb:"bencina", r0:9.5,  cap:0.6 },
+      { id:"a5", nombre:"SUV — diésel",                 comb:"diesel",  r0:7.5,  cap:0.6 },
+      { id:"a6", nombre:"Camioneta 4x4 — diésel",       comb:"diesel",  r0:10.5, cap:1.0 }
+    ]},
+    { grupo:"Reparto y carga", items:[
+      { id:"c1", nombre:"Furgón de reparto — diésel",   comb:"diesel",  r0:11.5, cap:1.5 },
+      { id:"c2", nombre:"Camión 3/4 — diésel",          comb:"diesel",  r0:14,   cap:5 },
+      { id:"c3", nombre:"Camión simple — diésel",       comb:"diesel",  r0:22,   cap:12 },
+      { id:"c4", nombre:"Camión de dos ejes — diésel",  comb:"diesel",  r0:26,   cap:18 },
+      { id:"c5", nombre:"Tractocamión — diésel",        comb:"diesel",  r0:30,   cap:28 }
+    ]},
+    { grupo:"Otro", items:[
+      { id:"zz", nombre:"Personalizado — ingresar datos", comb:"diesel", r0:9, cap:1, libre:true }
+    ]}
   ];
 
-  var estado = { origen:null, destino:null, capas:[], marcas:[] };
+  var estado = { origen:null, destino:null, capaA:null, capaB:null, marcas:[], via:"" };
+  var ultimoVeh = null;
   var mapa = null;
 
   function nf(n,d){ return isFinite(n) ? n.toLocaleString("es-CL",{minimumFractionDigits:d,maximumFractionDigits:d}) : "—"; }
   function clp(n){ if(!isFinite(n)) return "—"; var v=Math.round(n); return (v<0?"−$":"$")+Math.abs(v).toLocaleString("es-CL"); }
   function numVal(el,def){ var v=parseFloat(el.value); return isFinite(v)?v:def; }
   function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim() || "#888"; }
+
+  /* ---------------- pestañas ---------------- */
+  function verVista(cual){
+    var esRes = cual === "resumen";
+    $("vista-resumen").hidden = !esRes;
+    $("vista-detalle").hidden = esRes;
+    $("tab-resumen").setAttribute("aria-selected", String(esRes));
+    $("tab-detalle").setAttribute("aria-selected", String(!esRes));
+    if(esRes && mapa){ setTimeout(function(){ try{ mapa.invalidateSize(); }catch(e){} }, 30); }
+    window.scrollTo({ top:0, behavior:"smooth" });
+  }
+  $("tab-resumen").addEventListener("click", function(){ verVista("resumen"); });
+  $("tab-detalle").addEventListener("click", function(){ verVista("detalle"); });
+  $("btn-detalle").addEventListener("click", function(){ verVista("detalle"); });
 
   /* ---------------- mapa ---------------- */
   function iniciarMapa(){
@@ -487,16 +541,17 @@ footer p{margin-bottom:7px}
     }catch(e){ mapa = null; }
   }
   function limpiarCapas(){
-    if(!mapa){ estado.capas=[]; estado.marcas=[]; return; }
-    estado.capas.concat(estado.marcas).forEach(function(c){ try{ mapa.removeLayer(c); }catch(e){} });
-    estado.capas = []; estado.marcas = [];
+    if(!mapa) return;
+    [estado.capaA, estado.capaB].concat(estado.marcas).forEach(function(c){
+      if(c){ try{ mapa.removeLayer(c); }catch(e){} }
+    });
+    estado.capaA = null; estado.capaB = null; estado.marcas = [];
   }
   function dibujarRuta(geometry, col){
-    if(!mapa || !geometry) return;
+    if(!mapa || !geometry) return null;
     try{
-      estado.capas.push(L.geoJSON({type:"Feature",geometry:geometry},
-        {style:{color:col,weight:5,opacity:.85}}).addTo(mapa));
-    }catch(e){}
+      return L.geoJSON({type:"Feature",geometry:geometry},{style:{color:col,weight:5,opacity:.85}}).addTo(mapa);
+    }catch(e){ return null; }
   }
   function marcar(coord, col, texto){
     if(!mapa || !coord) return;
@@ -513,7 +568,6 @@ footer p{margin-bottom:7px}
   function geocodificar(texto){
     var bbox = "-76.0,-56.5,-66.0,-17.0";
     var urlP = "https://photon.komoot.io/api/?q=" + encodeURIComponent(texto) + "&limit=6&bbox=" + bbox;
-
     return fetch(urlP)
       .then(function(r){ if(!r.ok) throw new Error("photon " + r.status); return r.json(); })
       .then(function(d){
@@ -531,15 +585,13 @@ footer p{margin-bottom:7px}
         return out;
       })
       .catch(function(){
-        var urlN = "https://nominatim.openstreetmap.org/search?format=jsonv2&countrycodes=cl&limit=6&q=" +
-                   encodeURIComponent(texto);
+        var urlN = "https://nominatim.openstreetmap.org/search?format=jsonv2&countrycodes=cl&limit=6&q=" + encodeURIComponent(texto);
         return fetch(urlN, { headers:{ "Accept":"application/json" } })
           .then(function(r){ if(!r.ok) throw new Error("nominatim " + r.status); return r.json(); })
           .then(function(arr){
             var out = (arr || []).map(function(x){
               var partes = String(x.display_name || "").split(",").map(function(s){ return s.trim(); });
-              return { principal: partes.shift() || "Lugar",
-                       resto: partes.slice(0,3).join(", "),
+              return { principal: partes.shift() || "Lugar", resto: partes.slice(0,3).join(", "),
                        coord: [parseFloat(x.lon), parseFloat(x.lat)] };
             }).filter(function(x){ return isFinite(x.coord[0]) && isFinite(x.coord[1]); });
             if(!out.length) throw new Error("sin resultados");
@@ -549,26 +601,20 @@ footer p{margin-bottom:7px}
   }
 
   function revisarBoton(){
-    var o = $("origen").value.trim(), d = $("destino").value.trim();
-    $("btn-calcular").disabled = !(o.length >= 3 && d.length >= 3);
+    $("btn-calcular").disabled = !($("origen").value.trim().length >= 3 && $("destino").value.trim().length >= 3);
   }
 
   function montarBuscador(inputId, sugId, campo){
     var input = $(inputId), caja = $(sugId), timer = null, pedido = 0;
-
     input.addEventListener("input", function(){
-      estado[campo] = null;
-      revisarBoton();
+      estado[campo] = null; revisarBoton();
       var texto = input.value.trim();
       clearTimeout(timer);
       if(texto.length < 3){ caja.hidden = true; return; }
       timer = setTimeout(function(){
         var mio = ++pedido;
-        geocodificar(texto).then(function(items){
-          if(mio === pedido) pintar(items);
-        }).catch(function(){
-          if(mio === pedido) caja.hidden = true;
-        });
+        geocodificar(texto).then(function(items){ if(mio === pedido) pintar(items); })
+                           .catch(function(){ if(mio === pedido) caja.hidden = true; });
       }, 280);
     });
     input.addEventListener("blur", function(){ setTimeout(function(){ caja.hidden = true; }, 170); });
@@ -586,9 +632,8 @@ footer p{margin-bottom:7px}
         b.addEventListener("mousedown", function(ev){
           ev.preventDefault();
           input.value = it.principal + (it.resto ? ", " + it.resto : "");
-          estado[campo] = { label:input.value, coord:it.coord };
-          caja.hidden = true;
-          revisarBoton();
+          estado[campo] = { label:it.principal, coord:it.coord };
+          caja.hidden = true; revisarBoton();
         });
         caja.appendChild(b);
       });
@@ -609,8 +654,7 @@ footer p{margin-bottom:7px}
 
   $("btn-calcular").addEventListener("click", function(){
     limpiarError();
-    var btn = $("btn-calcular");
-    btn.disabled = true;
+    $("btn-calcular").disabled = true;
 
     Promise.all([ asegurarPunto("origen","origen"), asegurarPunto("destino","destino") ])
       .catch(function(){ throw new Error("geo"); })
@@ -628,22 +672,24 @@ footer p{margin-bottom:7px}
         limpiarCapas();
 
         aplicarRuta(data.routes[0], "a", "Ruta principal");
-        dibujarRuta(data.routes[0].geometry, css("--ruta-a"));
+        estado.capaA = dibujarRuta(data.routes[0].geometry, css("--ruta-a"));
 
         if(data.routes.length > 1){
           aplicarRuta(data.routes[1], "b", "Ruta alternativa");
-          dibujarRuta(data.routes[1].geometry, css("--ruta-b"));
+          estado.capaB = dibujarRuta(data.routes[1].geometry, css("--ruta-b"));
         } else {
           $("nom-b").textContent = "Alternativa manual";
           $("th-b").textContent  = "Alternativa manual";
-          mostrarError("El servicio encontró una sola ruta entre esos puntos. Edita a mano los datos de la ruta B para comparar.");
+          mostrarError("El servicio encontró una sola ruta entre esos puntos. Edita a mano los datos de la ruta B, en Análisis detallado, para comparar.");
         }
 
         marcar(estado.origen.coord, css("--ruta-a"), estado.origen.label);
         marcar(estado.destino.coord, css("--ruta-b"), estado.destino.label);
+        estado.via = estado.origen.label + " → " + estado.destino.label;
 
-        if(mapa && estado.capas.length){
-          try{ mapa.fitBounds(L.featureGroup(estado.capas).getBounds(), { padding:[30,30] }); }catch(e){}
+        var capas = [estado.capaA, estado.capaB].filter(Boolean);
+        if(mapa && capas.length){
+          try{ mapa.fitBounds(L.featureGroup(capas).getBounds(), { padding:[30,30] }); }catch(e){}
         }
         render();
       })
@@ -662,17 +708,31 @@ footer p{margin-bottom:7px}
   function aplicarRuta(ruta, cual, nombre){
     var km = (ruta.distance || 0) / 1000;
     var horas = (ruta.duration || 0) / 3600;
-    var vel = horas > 0 ? (km / horas) * numVal($("fv"), 0.85) : 0;
+    var v = vehActual();
+    var factor = v.cap >= 3 ? numVal($("fv"), 0.85) : 1;
+    var vel = horas > 0 ? (km / horas) * factor : 0;
     $("d" + cual).value = km.toFixed(1);
     $("v" + cual).value = vel.toFixed(1);
     $("nom-" + cual).textContent = nombre;
     $("th-" + cual).textContent  = nombre;
   }
 
-  /* ---------------- motor de cálculo ---------------- */
-  function calcular(d, v, peaje, r, p){
+  /* ---------------- vehículos ---------------- */
+  function vehActual(){
+    var id = $("veh").value, encontrado = null;
+    GRUPOS.forEach(function(g){ g.items.forEach(function(v){ if(v.id === id) encontrado = v; }); });
+    if(!encontrado) encontrado = GRUPOS[1].items[2];
+    if(encontrado.libre){
+      return { id:encontrado.id, nombre:encontrado.nombre, libre:true,
+               comb:$("pz-comb").value, r0:numVal($("pz-r0"),9), cap:numVal($("pz-cap"),1) };
+    }
+    return encontrado;
+  }
+
+  /* ---------------- cálculo ---------------- */
+  function calcular(d, v, peaje, r, fe, precio, ch){
     var C = (d/100) * r, t = d/v;
-    return { d:d, v:v, peaje:peaje, r:r, C:C, t:t, E:C*p.fe, CL:C*p.precio + t*p.ch + peaje };
+    return { d:d, v:v, peaje:peaje, r:r, C:C, t:t, E:C*fe, CL:C*precio + t*ch + peaje };
   }
   function pct(dif, base){
     if(!isFinite(base) || base === 0) return "—";
@@ -680,22 +740,39 @@ footer p{margin-bottom:7px}
     if(Math.abs(p) < 0.05) return "sin variación respecto de la ruta A";
     return nf(Math.abs(p),1) + "% " + (p>0 ? "menos" : "más") + " que la ruta A";
   }
-  function vehActual(){
-    for(var i=0;i<VEHICULOS.length;i++){ if(VEHICULOS[i].id === $("veh").value) return VEHICULOS[i]; }
-    return VEHICULOS[1];
-  }
 
   function render(){
     var veh = vehActual();
-    var p = { fe:numVal($("fe"),2.70), precio:numVal($("precio"),1050), ch:numVal($("ch"),8000), k:numVal($("k"),0.55) };
+    $("personalizado").hidden = !veh.libre;
 
-    var carga = parseFloat($("carga").value);
-    $("carga").max = String(veh.cap);
-    if(carga > veh.cap){ carga = veh.cap; $("carga").value = String(carga); }
-    $("carga-out").textContent = nf(carga,0) + " t";
-    $("carga-hint").textContent = "Capacidad " + veh.cap + " t · rendimiento base " + veh.r0 + " L/100 km";
+    var esDiesel = veh.comb === "diesel";
+    var fe     = esDiesel ? numVal($("fe-d"),2.70) : numVal($("fe-b"),2.31);
+    var precio = esDiesel ? numVal($("pr-d"),1050) : numVal($("pr-b"),1290);
+    var ch     = numVal($("ch"),8000);
+    var k      = numVal($("k"),0.55);
 
-    var r = veh.r0 + p.k * carga;
+    /* carga: paso fino para vehículos livianos */
+    var paso = veh.cap <= 2 ? 0.1 : 1;
+    var dec  = veh.cap <= 2 ? 1 : 0;
+    var cargaEl = $("carga");
+    cargaEl.step = String(paso);
+    cargaEl.max  = String(veh.cap);
+    var carga;
+    if(veh.id !== ultimoVeh){
+      /* vehículo recién cambiado: parte con la carga máxima */
+      carga = veh.cap;
+      cargaEl.value = String(carga);
+      ultimoVeh = veh.id;
+    } else {
+      carga = parseFloat(cargaEl.value);
+      if(!isFinite(carga) || carga > veh.cap){ carga = veh.cap; cargaEl.value = String(carga); }
+    }
+    $("carga-out").textContent = nf(carga,dec) + " t";
+    $("carga-hint").textContent = "Capacidad " + nf(veh.cap,dec) + " t · consumo base " + nf(veh.r0,1) + " L/100 km";
+    $("veh-hint").textContent = (esDiesel ? "Diésel" : "Bencina") +
+      " · factor " + nf(fe,2) + " kg CO₂e/L · " + clp(precio) + " por litro";
+
+    var r = veh.r0 + k * carga;
 
     var da=numVal($("da"),0), va=numVal($("va"),0), pa=numVal($("pa"),0);
     var db=numVal($("db"),0), vb=numVal($("vb"),0), pb=numVal($("pb"),0);
@@ -707,9 +784,10 @@ footer p{margin-bottom:7px}
     }
     err.hidden = true;
 
-    var A = calcular(da,va,pa,r,p), B = calcular(db,vb,pb,r,p);
+    var A = calcular(da,va,pa,r,fe,precio,ch);
+    var B = calcular(db,vb,pb,r,fe,precio,ch);
 
-    /* tabla */
+    /* ----- tabla ----- */
     var filas = [
       { lab:"Rendimiento efectivo", uni:"L/100 km", a:r,    b:r,    dec:1, difTxt:"igual para ambas" },
       { lab:"Distancia",            uni:"km",       a:A.d,  b:B.d,  dec:1 },
@@ -737,11 +815,11 @@ footer p{margin-bottom:7px}
       tb.appendChild(tr);
     });
 
-    /* barras */
+    /* ----- barras ----- */
     var grupos = [
       { tit:"Distancia",   ico:ICO.medida, a:A.d,  b:B.d,  fmt:function(x){return nf(x,1)+" km";} },
       { tit:"Combustible", ico:ICO.gota,   a:A.C,  b:B.C,  fmt:function(x){return nf(x,1)+" L";} },
-      { tit:"Emisiones",   ico:ICO.hoja,   a:A.E,  b:B.E,  fmt:function(x){return nf(x,0)+" kg CO₂e";} },
+      { tit:"Emisiones",   ico:ICO.hoja,   a:A.E,  b:B.E,  fmt:function(x){return nf(x,1)+" kg CO₂e";} },
       { tit:"Costo",       ico:ICO.plata,  a:A.CL, b:B.CL, fmt:clp }
     ];
     var cont = $("barras"); cont.innerHTML = "";
@@ -755,33 +833,29 @@ footer p{margin-bottom:7px}
       cont.appendChild(div);
     });
 
-    /* indicadores */
+    /* ----- indicadores ----- */
     var dKm=A.d-B.d, dL=A.C-B.C, dE=A.E-B.E, dCL=A.CL-B.CL;
     var kpis = [
-      { lab:"Kilómetros reducidos", val:nf(dKm,1)+" km", n:dKm, pie:pct(dKm,A.d),  form:"Δd = d_A − d_B",
-        ico:ICO.medida, c:"--ruta-b", cs:"--ruta-b-soft" },
-      { lab:"Combustible reducido", val:nf(dL,1)+" L",   n:dL,  pie:pct(dL,A.C),   form:"ΔC = C_A − C_B",
-        ico:ICO.gota,   c:"--ruta-a", cs:"--ruta-a-soft" },
-      { lab:"kg CO₂e evitados",     val:nf(dE,1)+" kg",  n:dE,  pie:pct(dE,A.E),   form:"ΔE = ΔC · FE",
-        ico:ICO.hoja,   c:"--ok",     cs:"--ok-soft" },
-      { lab:"Ahorro en costo",      val:clp(dCL),        n:dCL, pie:pct(dCL,A.CL), form:"ΔCL = CL_A − CL_B",
-        ico:ICO.plata,  c:"--violeta", cs:"--violeta-soft" }
+      { lab:"Kilómetros reducidos", val:nf(dKm,1)+" km", n:dKm, pie:pct(dKm,A.d),  form:"Δd = d_A − d_B",  ico:ICO.medida, c:"--ruta-b", cs:"--ruta-b-soft" },
+      { lab:"Combustible reducido", val:nf(dL,1)+" L",   n:dL,  pie:pct(dL,A.C),   form:"ΔC = C_A − C_B",  ico:ICO.gota,   c:"--ruta-a", cs:"--ruta-a-soft" },
+      { lab:"kg CO₂e evitados",     val:nf(dE,1)+" kg",  n:dE,  pie:pct(dE,A.E),   form:"ΔE = ΔC · FE",    ico:ICO.hoja,   c:"--ok",     cs:"--ok-soft" },
+      { lab:"Ahorro en costo",      val:clp(dCL),        n:dCL, pie:pct(dCL,A.CL), form:"ΔCL = CL_A − CL_B", ico:ICO.plata, c:"--violeta", cs:"--violeta-soft" }
     ];
     var kc = $("kpis"); kc.innerHTML = "";
-    kpis.forEach(function(k){
-      var cls = Math.abs(k.n) < 1e-9 ? "" : (k.n > 0 ? "pos" : "neg");
+    kpis.forEach(function(kp){
+      var cls = Math.abs(kp.n) < 1e-9 ? "" : (kp.n > 0 ? "pos" : "neg");
       var el = document.createElement("div");
       el.className = "kpi";
       el.innerHTML =
-        '<div class="kpi-top"><span class="kpi-ico" style="background:'+css(k.cs)+'; color:'+css(k.c)+'">'+k.ico+'</span>' +
-        '<span class="kpi-lab">'+k.lab+'</span></div>' +
-        '<div class="kpi-val '+cls+'">'+k.val+'</div>' +
-        '<div class="kpi-pie">'+k.pie+'</div>' +
-        '<div class="kpi-form">'+k.form+'</div>';
+        '<div class="kpi-top"><span class="kpi-ico" style="background:'+css(kp.cs)+'; color:'+css(kp.c)+'">'+kp.ico+'</span>' +
+        '<span class="kpi-lab">'+kp.lab+'</span></div>' +
+        '<div class="kpi-val '+cls+'">'+kp.val+'</div>' +
+        '<div class="kpi-pie">'+kp.pie+'</div>' +
+        '<div class="kpi-form">'+kp.form+'</div>';
       kc.appendChild(el);
     });
 
-    /* pesos e índice */
+    /* ----- pesos ----- */
     var we=parseFloat($("we").value), wc=parseFloat($("wc").value), wt=parseFloat($("wt").value);
     $("we-out").textContent=we+"%"; $("wc-out").textContent=wc+"%"; $("wt-out").textContent=wt+"%";
     var suma = we+wc+wt;
@@ -792,11 +866,10 @@ footer p{margin-bottom:7px}
     function score(x,y){ var m=Math.min(x,y); return m<=0 ? 1 : m/x; }
     var iA = ne*score(A.E,B.E) + nc*score(A.CL,B.CL) + nt*score(A.t,B.t);
     var iB = ne*score(B.E,A.E) + nc*score(B.CL,A.CL) + nt*score(B.t,A.t);
-    $("indice").innerHTML =
-      '<span class="ipill a">Índice ruta A · <b>'+nf(iA,3)+'</b></span>' +
-      '<span class="ipill b">Índice ruta B · <b>'+nf(iB,3)+'</b></span>';
+    $("indice").innerHTML = '<span class="ipill a">Índice ruta A · <b>'+nf(iA,3)+'</b></span>' +
+                            '<span class="ipill b">Índice ruta B · <b>'+nf(iB,3)+'</b></span>';
 
-    /* recomendación */
+    /* ----- recomendación ----- */
     var gana = iB >= iA ? "B" : "A";
     var nomGan = gana === "B" ? $("nom-b").textContent : $("nom-a").textContent;
     var G = gana === "B" ? B : A, P = gana === "B" ? A : B;
@@ -812,46 +885,73 @@ footer p{margin-bottom:7px}
     else partes.push("cuesta prácticamente lo mismo");
     if(tiempoExtra > 0.01) partes.push("demora "+nf(tiempoExtra*60,0)+" min más");
     else if(tiempoExtra < -0.01) partes.push("demora "+nf(-tiempoExtra*60,0)+" min menos");
-
     var frase = "Frente a la otra alternativa, " + partes.join(", ") + ".";
 
+    /* marcar la ganadora en las tarjetas */
+    $("card-a").classList.toggle("rec", gana === "A");
+    $("card-b").classList.toggle("rec", gana === "B");
+    $("em-a").textContent = "Alternativa A" + (gana === "A" ? " · Recomendada" : "");
+    $("em-b").textContent = "Alternativa B" + (gana === "B" ? " · Recomendada" : "");
+
+    /* marcar la ganadora en el mapa */
+    if(estado.capaA){ try{ estado.capaA.setStyle({ weight: gana==="A"?8:4, opacity: gana==="A"?.95:.4 }); if(gana==="A") estado.capaA.bringToFront(); }catch(e){} }
+    if(estado.capaB){ try{ estado.capaB.setStyle({ weight: gana==="B"?8:4, opacity: gana==="B"?.95:.4 }); if(gana==="B") estado.capaB.bringToFront(); }catch(e){} }
+
+    /* leyenda */
+    $("leyenda").innerHTML =
+      '<span><i class="swatch" style="background:'+css("--ruta-a")+'"></i> '+$("nom-a").textContent+
+        (gana==="A" ? ' <i class="marca-rec">Recomendada</i>' : '')+'</span>' +
+      '<span><i class="swatch" style="background:'+css("--ruta-b")+'"></i> '+$("nom-b").textContent+
+        (gana==="B" ? ' <i class="marca-rec">Recomendada</i>' : '')+'</span>';
+
+    /* hero */
+    $("hero-ruta").textContent = nomGan;
+    $("hero-via").textContent  = estado.via;
+    $("hero-txt").textContent  = frase;
+    $("hero-stats").innerHTML =
+      '<div class="hstat"><span class="hstat-lab">'+ICO.hoja+'CO₂e evitado</span><span class="hstat-val">'+nf(emisMenos,1)+' kg</span></div>' +
+      '<div class="hstat"><span class="hstat-lab">'+ICO.gota+'Combustible</span><span class="hstat-val">'+nf(P.C-G.C,1)+' L</span></div>' +
+      '<div class="hstat"><span class="hstat-lab">'+ICO.plata+'Ahorro</span><span class="hstat-val">'+clp(-costoExtra)+'</span></div>';
+
+    /* veredicto */
+    var v = $("veredicto"), vex = $("ver-extra"), vico = $("ver-ico"), haviso = $("hero-aviso");
     $("ver-tit").textContent = "Ruta recomendada: " + nomGan;
     $("ver-txt").textContent = frase;
-    $("hero-ruta").textContent = nomGan;
-    $("hero-txt").textContent  = frase;
 
-    var ahorroE = emisMenos, ahorroL = P.C - G.C, ahorroCL = -costoExtra;
-    $("hero-stats").innerHTML =
-      '<div class="hstat"><span class="hstat-lab">'+ICO.hoja+'CO₂e evitado</span><span class="hstat-val">'+nf(ahorroE,1)+' kg</span></div>' +
-      '<div class="hstat"><span class="hstat-lab">'+ICO.gota+'Combustible</span><span class="hstat-val">'+nf(ahorroL,1)+' L</span></div>' +
-      '<div class="hstat"><span class="hstat-lab">'+ICO.plata+'Ahorro</span><span class="hstat-val">'+clp(ahorroCL)+'</span></div>';
-
-    var v = $("veredicto"), vex = $("ver-extra"), vico = $("ver-ico");
     if(caro && emisMenos > 0.05){
-      v.className = "veredicto alerta"; vico.innerHTML = ICO.alerta; vex.hidden = false;
-      vex.textContent = "La ruta más limpia no es la más barata. El sobrecosto es de "+clp(costoExtra)+
+      var t1 = "La ruta más limpia no es la más barata. El sobrecosto es de "+clp(costoExtra)+
         ", equivalente a "+clp(costoExtra/emisMenos)+" por cada kilogramo de CO₂e evitado. La decisión queda en manos de la empresa.";
+      v.className = "veredicto alerta"; vico.innerHTML = ICO.alerta;
+      vex.hidden = false; vex.textContent = t1;
+      haviso.hidden = false; haviso.textContent = t1;
     } else if(caro){
-      v.className = "veredicto alerta"; vico.innerHTML = ICO.alerta; vex.hidden = false;
-      vex.textContent = "La ruta recomendada por el índice ponderado tiene un sobrecosto de "+clp(costoExtra)+
+      var t2 = "La ruta recomendada por el índice ponderado tiene un sobrecosto de "+clp(costoExtra)+
         " sin reducir emisiones. Revisa los pesos asignados a cada criterio.";
+      v.className = "veredicto alerta"; vico.innerHTML = ICO.alerta;
+      vex.hidden = false; vex.textContent = t2;
+      haviso.hidden = false; haviso.textContent = t2;
     } else {
-      v.className = "veredicto ok"; vico.innerHTML = ICO.ok; vex.hidden = true;
+      v.className = "veredicto ok"; vico.innerHTML = ICO.ok;
+      vex.hidden = true; haviso.hidden = true;
     }
   }
 
   /* ---------------- arranque ---------------- */
-  VEHICULOS.forEach(function(v){
-    var o = document.createElement("option");
-    o.value = v.id; o.textContent = v.nombre;
-    $("veh").appendChild(o);
+  GRUPOS.forEach(function(g){
+    var og = document.createElement("optgroup");
+    og.label = g.grupo;
+    g.items.forEach(function(v){
+      var o = document.createElement("option");
+      o.value = v.id; o.textContent = v.nombre;
+      og.appendChild(o);
+    });
+    $("veh").appendChild(og);
   });
-  $("veh").value = "v2";
+  $("veh").value = "c3";
 
-  ["carga","da","va","pa","db","vb","pb","fe","precio","ch","k","we","wc","wt"].forEach(function(id){
-    $(id).addEventListener("input", render);
-  });
-  $("veh").addEventListener("change", render);
+  ["carga","da","va","pa","db","vb","pb","fe-d","fe-b","pr-d","pr-b","ch","k","fv","we","wc","wt",
+   "pz-r0","pz-cap"].forEach(function(id){ $(id).addEventListener("input", render); });
+  ["veh","pz-comb"].forEach(function(id){ $(id).addEventListener("change", render); });
 
   iniciarMapa();
   montarBuscador("origen","sug-origen","origen");
