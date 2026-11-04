@@ -49,7 +49,7 @@ p{margin:0}
 .tab:focus-visible{outline:2px solid var(--violeta); outline-offset:2px}
 
 /* hero */
-.hero{margin-top:20px; border-radius:24px; padding:28px; color:#fff;
+.hero{margin-top:26px; border-radius:24px; padding:28px; color:#fff;
   background:linear-gradient(135deg,var(--violeta) 0%,var(--violeta-2) 100%);
   box-shadow:0 10px 30px rgba(106,77,240,.26)}
 .hero-lab{display:flex; align-items:center; gap:8px; font-size:12.5px; font-weight:600;
@@ -213,6 +213,40 @@ details.params summary svg{width:18px; height:18px; color:var(--violeta)}
 .fuente{font-size:13px; color:var(--ink-2); margin-top:18px; padding:14px 16px; background:var(--soft); border-radius:12px}
 .fuente b{color:var(--ink); font-weight:600}
 
+
+/* menu lateral */
+.menu-btn{width:40px; height:40px; border-radius:12px; flex:none; border:none; cursor:pointer;
+  background:var(--soft); color:var(--ink); display:flex; align-items:center; justify-content:center}
+.menu-btn:hover{background:var(--soft-2)}
+.menu-btn:focus-visible{outline:2px solid var(--violeta); outline-offset:2px}
+.menu-btn svg{width:21px; height:21px}
+.fondo{position:fixed; inset:0; background:rgba(26,27,46,.45); z-index:1900;
+  opacity:0; pointer-events:none; transition:opacity .22s ease}
+.fondo.visible{opacity:1; pointer-events:auto}
+.cajon{position:fixed; top:0; left:0; bottom:0; width:min(300px,85vw); z-index:2000;
+  background:var(--card); box-shadow:4px 0 28px rgba(22,24,48,.18);
+  transform:translateX(-100%); transition:transform .24s ease;
+  display:flex; flex-direction:column; padding:20px}
+.cajon.abierto{transform:translateX(0)}
+.cajon-top{display:flex; align-items:center; gap:10px; margin-bottom:22px}
+.cajon-top strong{font-size:15px; font-weight:700; line-height:1.3}
+.cajon-cerrar{margin-left:auto; width:34px; height:34px; border-radius:10px; border:none; cursor:pointer;
+  background:var(--soft); color:var(--ink-2); display:flex; align-items:center; justify-content:center}
+.cajon-cerrar:hover{background:var(--soft-2)}
+.cajon-cerrar svg{width:17px; height:17px}
+.cajon-lab{font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase;
+  color:var(--ink-3); margin-bottom:10px}
+.cajon-nav{display:flex; flex-direction:column; gap:6px}
+.cajon-item{display:flex; align-items:center; gap:12px; width:100%; text-align:left; cursor:pointer;
+  font-family:var(--fuente); font-size:14.5px; font-weight:600; color:var(--ink-2);
+  background:none; border:none; border-radius:12px; padding:12px 14px}
+.cajon-item svg{width:18px; height:18px; flex:none}
+.cajon-item:hover{background:var(--soft)}
+.cajon-item[aria-current="page"]{background:var(--violeta-soft); color:var(--violeta)}
+.cajon-item:focus-visible{outline:2px solid var(--violeta); outline-offset:2px}
+.cajon-pie{margin-top:auto; font-size:12px; color:var(--ink-3); line-height:1.5}
+@media (prefers-reduced-motion:reduce){ .cajon,.fondo{transition:none} }
+
 footer{margin-top:44px; padding-top:26px; border-top:1px solid var(--line); color:var(--ink-3); font-size:13px}
 footer p{margin-bottom:7px}
 .formulas{font-family:var(--mono); font-size:12px; color:var(--ink-2); margin-top:14px; line-height:2;
@@ -224,6 +258,9 @@ footer p{margin-bottom:7px}
 
 <div class="topbar">
   <div class="topbar-in">
+    <button class="menu-btn" id="menu-btn" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="cajon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
+    </button>
     <span class="logo" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="6" cy="19" r="2.2"></circle><circle cx="18" cy="5" r="2.2"></circle>
@@ -238,15 +275,38 @@ footer p{margin-bottom:7px}
   </div>
 </div>
 
+<div class="fondo" id="fondo"></div>
+<nav class="cajon" id="cajon" aria-label="Secciones del sitio" aria-hidden="true">
+  <div class="cajon-top">
+    <span class="logo" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="6" cy="19" r="2.2"></circle><circle cx="18" cy="5" r="2.2"></circle>
+        <path d="M8.2 19h5.3a3.5 3.5 0 0 0 0-7h-3a3.5 3.5 0 0 1 0-7h5.3"></path>
+      </svg>
+    </span>
+    <strong>Comparador<br>de rutas</strong>
+    <button class="cajon-cerrar" id="cajon-cerrar" type="button" aria-label="Cerrar menú">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+    </button>
+  </div>
+  <p class="cajon-lab">Secciones</p>
+  <div class="cajon-nav">
+    <button class="cajon-item" id="nav-resumen" type="button" aria-current="page">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+      Resumen
+    </button>
+    <button class="cajon-item" id="nav-detalle" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10"></path><path d="M10 20V4"></path><path d="M16 20v-7"></path><path d="M22 20H2"></path></svg>
+      Análisis detallado
+    </button>
+  </div>
+  <p class="cajon-pie">Prototipo académico.<br>Ingeniería y Desarrollo Sostenible.</p>
+</nav>
+
 <div class="wrap">
 
-  <div class="tabs" role="tablist">
-    <button class="tab" id="tab-resumen" role="tab" aria-selected="true" aria-controls="vista-resumen" type="button">Resumen</button>
-    <button class="tab" id="tab-detalle" role="tab" aria-selected="false" aria-controls="vista-detalle" type="button">Análisis detallado</button>
-  </div>
-
   <!-- ===================== RESUMEN ===================== -->
-  <div id="vista-resumen" role="tabpanel" aria-labelledby="tab-resumen">
+  <div id="vista-resumen">
 
     <div class="hero">
       <span class="hero-lab">
@@ -335,7 +395,7 @@ footer p{margin-bottom:7px}
   </div>
 
   <!-- ===================== DETALLE ===================== -->
-  <div id="vista-detalle" role="tabpanel" aria-labelledby="tab-detalle" hidden>
+  <div id="vista-detalle" hidden>
 
     <section class="sec" style="margin-top:24px">
       <div class="sec-head">
@@ -513,18 +573,33 @@ footer p{margin-bottom:7px}
   function numVal(el,def){ var v=parseFloat(el.value); return isFinite(v)?v:def; }
   function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim() || "#888"; }
 
-  /* ---------------- pestañas ---------------- */
+  /* ---------------- menú lateral y vistas ---------------- */
+  function abrirMenu(abrir){
+    $("cajon").classList.toggle("abierto", abrir);
+    $("fondo").classList.toggle("visible", abrir);
+    $("cajon").setAttribute("aria-hidden", String(!abrir));
+    $("menu-btn").setAttribute("aria-expanded", String(abrir));
+    if(abrir) $("nav-resumen").focus();
+    else $("menu-btn").focus();
+  }
+  $("menu-btn").addEventListener("click", function(){ abrirMenu(true); });
+  $("cajon-cerrar").addEventListener("click", function(){ abrirMenu(false); });
+  $("fondo").addEventListener("click", function(){ abrirMenu(false); });
+  document.addEventListener("keydown", function(e){
+    if(e.key === "Escape" && $("cajon").classList.contains("abierto")) abrirMenu(false);
+  });
+
   function verVista(cual){
     var esRes = cual === "resumen";
     $("vista-resumen").hidden = !esRes;
     $("vista-detalle").hidden = esRes;
-    $("tab-resumen").setAttribute("aria-selected", String(esRes));
-    $("tab-detalle").setAttribute("aria-selected", String(!esRes));
-    if(esRes && mapa){ setTimeout(function(){ try{ mapa.invalidateSize(); }catch(e){} }, 30); }
+    if(esRes){ $("nav-resumen").setAttribute("aria-current","page"); $("nav-detalle").removeAttribute("aria-current"); }
+    else     { $("nav-detalle").setAttribute("aria-current","page"); $("nav-resumen").removeAttribute("aria-current"); }
+    if(esRes && mapa){ setTimeout(function(){ try{ mapa.invalidateSize(); }catch(e){} }, 60); }
     window.scrollTo({ top:0, behavior:"smooth" });
   }
-  $("tab-resumen").addEventListener("click", function(){ verVista("resumen"); });
-  $("tab-detalle").addEventListener("click", function(){ verVista("detalle"); });
+  $("nav-resumen").addEventListener("click", function(){ verVista("resumen"); abrirMenu(false); });
+  $("nav-detalle").addEventListener("click", function(){ verVista("detalle"); abrirMenu(false); });
   $("btn-detalle").addEventListener("click", function(){ verVista("detalle"); });
 
   /* ---------------- mapa ---------------- */
