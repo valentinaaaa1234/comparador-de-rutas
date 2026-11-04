@@ -214,6 +214,23 @@ details.params summary svg{width:18px; height:18px; color:var(--violeta)}
 .fuente b{color:var(--ink); font-weight:600}
 
 
+
+.od-acciones{display:flex; gap:8px; margin-top:7px; flex-wrap:wrap}
+.mini{font-family:var(--fuente); font-size:12.5px; font-weight:600; color:var(--violeta);
+  background:var(--violeta-soft); border:none; border-radius:9px; padding:6px 11px; cursor:pointer;
+  display:flex; align-items:center; gap:6px}
+.mini svg{width:14px; height:14px}
+.mini:hover{filter:brightness(.96)}
+.mini[aria-pressed="true"]{background:var(--violeta); color:#fff}
+.mini:focus-visible{outline:2px solid var(--violeta); outline-offset:2px}
+.sug-tag{display:inline-block; font-size:10.5px; font-weight:700; letter-spacing:.04em;
+  text-transform:uppercase; padding:2px 7px; border-radius:999px; margin-left:7px; vertical-align:1px}
+.sug-tag.exacta{background:var(--ok-soft); color:var(--ok)}
+.sug-tag.calle{background:var(--soft-2); color:var(--ink-3)}
+.mapa-modo{background:var(--violeta-soft); color:var(--violeta); border-radius:12px;
+  padding:11px 14px; font-size:13.5px; font-weight:600; margin-top:12px}
+#mapa.eligiendo{cursor:crosshair}
+
 /* menu lateral */
 .menu-btn{width:40px; height:40px; border-radius:12px; flex:none; border:none; cursor:pointer;
   background:var(--soft); color:var(--ink); display:flex; align-items:center; justify-content:center}
@@ -325,7 +342,7 @@ footer p{margin-bottom:7px}
         <span class="sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span>
         <h2>Planificar comparación</h2>
       </div>
-      <p class="sec-sub">Escribe el origen y el destino; acepta direcciones con calle y número, por ejemplo <i>Balmaceda 1341, La Serena</i>. En vehículo escribe la marca y elige el modelo: el consumo y la capacidad se completan solos.</p>
+      <p class="sec-sub">Escribe el origen y el destino; acepta direcciones con calle y número, por ejemplo <i>Balmaceda 1341, La Serena</i>. Si la dirección exacta no aparece, usa <i>Fijar en el mapa</i> o pega las coordenadas. En vehículo escribe la marca y elige el modelo: el consumo y la capacidad se completan solos.</p>
 
       <div class="dos" style="align-items:start">
         <div class="card">
@@ -336,6 +353,12 @@ footer p{margin-bottom:7px}
                 <label for="origen">Origen</label>
                 <input type="text" id="origen" placeholder="Balmaceda 1341, La Serena" autocomplete="off">
                 <div class="sugerencias" id="sug-origen" hidden></div>
+                <div class="od-acciones">
+                  <button class="mini" id="pin-origen" type="button" aria-pressed="false">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>
+                    Fijar en el mapa
+                  </button>
+                </div>
               </div>
             </div>
             <div class="od-row">
@@ -344,6 +367,12 @@ footer p{margin-bottom:7px}
                 <label for="destino">Destino</label>
                 <input type="text" id="destino" placeholder="Av. Angamos 601, Antofagasta" autocomplete="off">
                 <div class="sugerencias" id="sug-destino" hidden></div>
+                <div class="od-acciones">
+                  <button class="mini" id="pin-destino" type="button" aria-pressed="false">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V4"></path><path d="M4 5h11l-1.6 3.4L15 12H4"></path></svg>
+                    Fijar en el mapa
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -383,6 +412,7 @@ footer p{margin-bottom:7px}
 
         <div style="min-width:0">
           <div id="mapa"></div>
+          <div class="mapa-modo" id="mapa-modo" hidden></div>
           <div class="leyenda" id="leyenda"></div>
           <div class="aviso" id="error-api" hidden></div>
         </div>
@@ -599,21 +629,35 @@ footer p{margin-bottom:7px}
     { n:"Maxus T60",           c:"Camioneta", r0:9.2, cap:1.00 },
     { n:"Mercedes-Benz Sprinter", c:"Furgón", r0:10.5, cap:1.50 },
     { n:"JAC Sunray",          c:"Furgón",    r0:10.8, cap:1.50 },
-    { n:"JAC X200",            c:"Camión",    r0:14.5, cap:3.50 },
-    { n:"Foton Aumark",        c:"Camión",    r0:15,  cap:4.50 },
-    { n:"Hino 300",            c:"Camión",    r0:17,  cap:5.50 },
-    { n:"Hino 500",            c:"Camión",    r0:24,  cap:11 },
-    { n:"Mercedes-Benz Accelo",c:"Camión",    r0:18,  cap:6.00 },
-    { n:"Mercedes-Benz Atego", c:"Camión",    r0:25,  cap:12 },
-    { n:"Volvo FL",            c:"Camión",    r0:26,  cap:14 },
-    { n:"Volvo FH",            c:"Tractocamión", r0:32, cap:28 },
-    { n:"Scania R450",         c:"Tractocamión", r0:31, cap:28 },
-    { n:"Mercedes-Benz Actros",c:"Tractocamión", r0:31.5, cap:28 },
-    { n:"Freightliner Cascadia", c:"Tractocamión", r0:33, cap:28 },
-    { n:"International Lonestar", c:"Tractocamión", r0:34, cap:28 }
+    { n:"JAC X200",            c:"Camión liviano", r0:14.5, cap:3.50 },
+    { n:"JAC N120",            c:"Camión liviano", r0:15.5, cap:4.00 },
+    { n:"Foton Aumark S",      c:"Camión liviano", r0:15,   cap:4.50 },
+    { n:"Foton Auman",         c:"Camión",         r0:23,   cap:10 },
+    { n:"Hyundai HD65",        c:"Camión liviano", r0:14,   cap:3.00 },
+    { n:"Hino 300 816",        c:"Camión liviano", r0:16,   cap:4.00 },
+    { n:"Hino 300 916",        c:"Camión liviano", r0:17,   cap:5.50 },
+    { n:"Hino 500 1726",       c:"Camión",         r0:24,   cap:11 },
+    { n:"Mercedes-Benz Accelo 1016", c:"Camión liviano", r0:18, cap:6.00 },
+    { n:"Mercedes-Benz Atego 1726",  c:"Camión",    r0:25,   cap:12 },
+    { n:"Volvo FL 240",        c:"Camión",         r0:26,   cap:14 },
+
+    { n:"Volvo FH 460",        c:"Tractocamión", r0:32,   cap:28 },
+    { n:"Volvo FH 500",        c:"Tractocamión", r0:33,   cap:28 },
+    { n:"Volvo FM 410",        c:"Tractocamión", r0:31,   cap:26 },
+    { n:"Scania R450",         c:"Tractocamión", r0:31,   cap:28 },
+    { n:"Scania R500",         c:"Tractocamión", r0:32.5, cap:28 },
+    { n:"Scania G410",         c:"Tractocamión", r0:30.5, cap:26 },
+    { n:"Mercedes-Benz New Actros 2045", c:"Tractocamión", r0:31.5, cap:28 },
+    { n:"Mercedes-Benz Actros 2646",     c:"Tractocamión", r0:33,   cap:28 },
+    { n:"MAN TGX 28.440",      c:"Tractocamión", r0:32,   cap:28 },
+    { n:"Freightliner Cascadia 126", c:"Tractocamión", r0:33, cap:28 },
+    { n:"Freightliner M2 112", c:"Camión",       r0:28,   cap:16 },
+    { n:"International Lonestar", c:"Tractocamión", r0:34, cap:28 },
+    { n:"International 9800",  c:"Tractocamión", r0:33.5, cap:28 },
+    { n:"Kenworth T800",       c:"Tractocamión", r0:34.5, cap:28 }
   ];
 
-  var estado = { origen:null, destino:null, capaA:null, capaB:null, marcas:[], via:"", vehId:"Camión simple (genérico)" };
+  var estado = { origen:null, destino:null, capaA:null, capaB:null, marcas:[], via:"", vehId:"Camión simple (genérico)", modo:null };
   var ultimoVeh = null;
   var mapa = null;
 
@@ -662,6 +706,10 @@ footer p{margin-bottom:7px}
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
         maxZoom:18, attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
       }).addTo(mapa);
+      mapa.on("click", function(ev){
+        if(!estado.modo) return;
+        fijarPunto(estado.modo, ev.latlng.lat, ev.latlng.lng);
+      });
     }catch(e){ mapa = null; }
   }
   function limpiarCapas(){
@@ -684,6 +732,52 @@ footer p{margin-bottom:7px}
         { radius:7, color:col, weight:3, fillColor:"#fff", fillOpacity:1 }).addTo(mapa).bindTooltip(texto));
     }catch(e){}
   }
+
+  /* ---- fijar origen o destino haciendo clic en el mapa ---- */
+  function modoMapa(campo){
+    estado.modo = campo;
+    $("pin-origen").setAttribute("aria-pressed", String(campo === "origen"));
+    $("pin-destino").setAttribute("aria-pressed", String(campo === "destino"));
+    var aviso = $("mapa-modo");
+    if(campo){
+      aviso.hidden = false;
+      aviso.textContent = "Haz clic en el mapa para fijar el " + campo + ".";
+      $("mapa").classList.add("eligiendo");
+    } else {
+      aviso.hidden = true;
+      $("mapa").classList.remove("eligiendo");
+    }
+  }
+
+  function fijarPunto(campo, lat, lon){
+    var etiqueta = lat.toFixed(5) + ", " + lon.toFixed(5);
+    estado[campo] = { label:etiqueta, coord:[lon, lat] };
+    $(campo).value = etiqueta;
+    revisarBoton();
+    modoMapa(null);
+    /* intenta ponerle nombre al punto, sin bloquear nada si falla */
+    fetch("https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1&lat=" +
+          lat + "&lon=" + lon, { headers:{ "Accept":"application/json" } })
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(d){
+        if(!d || !d.address) return;
+        var a = d.address;
+        var nom = (a.road ? a.road + (a.house_number ? " " + a.house_number : "") : null) ||
+                  a.suburb || a.city || a.town || a.village;
+        if(!nom) return;
+        var com = a.city || a.town || a.village || a.county || "";
+        estado[campo].label = nom;
+        $(campo).value = nom + (com && com !== nom ? ", " + com : "");
+      })
+      .catch(function(){});
+  }
+
+  $("pin-origen").addEventListener("click", function(){
+    modoMapa(estado.modo === "origen" ? null : "origen");
+  });
+  $("pin-destino").addEventListener("click", function(){
+    modoMapa(estado.modo === "destino" ? null : "destino");
+  });
 
   function mostrarError(msg){ var e=$("error-api"); e.hidden=false; e.textContent=msg; }
   function limpiarError(){ $("error-api").hidden = true; }
@@ -709,53 +803,90 @@ footer p{margin-bottom:7px}
           [pr.city, pr.district, pr.county, pr.state].forEach(function(x){
             if(x && x !== principal && resto.indexOf(x) === -1) resto.push(x);
           });
-          return { principal:principal, resto:resto.join(", "), coord:f.geometry.coordinates };
+          return { principal:principal, resto:resto.join(", "),
+                   exacta:!!pr.housenumber, coord:f.geometry.coordinates };
         }).filter(Boolean);
       });
+  }
+
+  function mapearNominatim(arr){
+    return (arr || []).map(function(x){
+      var a = x.address || {};
+      var principal;
+      if(a.road && a.house_number) principal = a.road + " " + a.house_number;
+      else if(a.road) principal = a.road;
+      else {
+        var partes = String(x.display_name || "").split(",").map(function(t){ return t.trim(); });
+        principal = partes[0] || "Lugar";
+        if(/^\d+$/.test(principal) && partes[1]) principal = partes[1] + " " + partes[0];
+      }
+      var resto = [];
+      [a.city || a.town || a.village, a.county, a.state].forEach(function(y){
+        if(y && y !== principal && resto.indexOf(y) === -1) resto.push(y);
+      });
+      return { principal:principal, resto:resto.join(", "), exacta:!!a.house_number,
+               coord:[parseFloat(x.lon), parseFloat(x.lat)] };
+    }).filter(function(x){ return isFinite(x.coord[0]) && isFinite(x.coord[1]); });
   }
 
   function buscarNominatim(texto){
     return fetch("https://nominatim.openstreetmap.org/search?format=jsonv2&countrycodes=cl&addressdetails=1&limit=7&q=" +
                  encodeURIComponent(texto), { headers:{ "Accept":"application/json" } })
       .then(function(r){ if(!r.ok) throw new Error("nominatim"); return r.json(); })
-      .then(function(arr){
-        return (arr || []).map(function(x){
-          var a = x.address || {};
-          var principal;
-          if(a.road && a.house_number) principal = a.road + " " + a.house_number;
-          else if(a.road) principal = a.road;
-          else {
-            var partes = String(x.display_name || "").split(",").map(function(t){ return t.trim(); });
-            principal = partes[0] || "Lugar";
-            if(/^\d+$/.test(principal) && partes[1]) principal = partes[1] + " " + partes[0];
-          }
-          var resto = [];
-          [a.city || a.town || a.village, a.county, a.state].forEach(function(y){
-            if(y && y !== principal && resto.indexOf(y) === -1) resto.push(y);
-          });
-          return { principal:principal, resto:resto.join(", "),
-                   coord:[parseFloat(x.lon), parseFloat(x.lat)] };
-        }).filter(function(x){ return isFinite(x.coord[0]) && isFinite(x.coord[1]); });
-      });
+      .then(mapearNominatim);
+  }
+
+  /* consulta estructurada: separa calle+numero de la comuna, que da
+     muchos mas aciertos con direcciones que la busqueda libre */
+  function buscarEstructurado(texto){
+    var trozos = texto.split(",");
+    var calle  = trozos[0].trim();
+    var ciudad = trozos.slice(1).join(",").trim();
+    if(!calle) return Promise.resolve([]);
+    var url = "https://nominatim.openstreetmap.org/search?format=jsonv2&countrycodes=cl" +
+              "&addressdetails=1&limit=6&street=" + encodeURIComponent(calle);
+    if(ciudad) url += "&city=" + encodeURIComponent(ciudad);
+    return fetch(url, { headers:{ "Accept":"application/json" } })
+      .then(function(r){ if(!r.ok) throw new Error("estructurado"); return r.json(); })
+      .then(mapearNominatim);
+  }
+
+  /* coordenadas pegadas directamente: "-29.9533, -71.3436" */
+  function comoCoordenadas(texto){
+    var m = texto.trim().match(/^\s*(-?\d{1,2}(?:[.,]\d+)?)\s*[,; ]\s*(-?\d{1,3}(?:[.,]\d+)?)\s*$/);
+    if(!m) return null;
+    var lat = parseFloat(m[1].replace(",", ".")), lon = parseFloat(m[2].replace(",", "."));
+    if(!isFinite(lat) || !isFinite(lon)) return null;
+    if(lat < -90 || lat > 90 || lon < -180 || lon > 180) return null;
+    return [{ principal: lat.toFixed(5) + ", " + lon.toFixed(5),
+              resto: "Coordenadas ingresadas", exacta:true, coord:[lon, lat] }];
   }
 
   function geocodificar(texto){
+    var coord = comoCoordenadas(texto);
+    if(coord) return Promise.resolve(coord);
+
     var esDireccion = /\d/.test(texto);
     var vacio = function(){ return []; };
-    return Promise.all([ buscarPhoton(texto).catch(vacio), buscarNominatim(texto).catch(vacio) ])
-      .then(function(res){
-        /* si el texto trae número, las direcciones de Nominatim van primero */
-        var lista = esDireccion ? res[1].concat(res[0]) : res[0].concat(res[1]);
-        var vistos = {}, out = [];
-        lista.forEach(function(it){
-          var clave = it.principal.toLowerCase() + "|" + it.coord[0].toFixed(3) + "," + it.coord[1].toFixed(3);
-          if(vistos[clave]) return;
-          vistos[clave] = true;
-          out.push(it);
-        });
-        if(!out.length) throw new Error("sin resultados");
-        return out.slice(0, 7);
+    var tareas = [ buscarPhoton(texto).catch(vacio), buscarNominatim(texto).catch(vacio) ];
+    if(esDireccion) tareas.push(buscarEstructurado(texto).catch(vacio));
+
+    return Promise.all(tareas).then(function(res){
+      var lista = esDireccion
+        ? (res[2] || []).concat(res[1], res[0])
+        : res[0].concat(res[1]);
+      /* las direcciones con número exacto van primero */
+      lista.sort(function(a,b){ return (b.exacta?1:0) - (a.exacta?1:0); });
+      var vistos = {}, out = [];
+      lista.forEach(function(it){
+        var clave = it.principal.toLowerCase() + "|" + it.coord[0].toFixed(4) + "," + it.coord[1].toFixed(4);
+        if(vistos[clave]) return;
+        vistos[clave] = true;
+        out.push(it);
       });
+      if(!out.length) throw new Error("sin resultados");
+      return out.slice(0, 7);
+    });
   }
 
   function revisarBoton(){
@@ -766,6 +897,7 @@ footer p{margin-bottom:7px}
     var input = $(inputId), caja = $(sugId), timer = null, pedido = 0;
     input.addEventListener("input", function(){
       estado[campo] = null; revisarBoton();
+      if(estado.modo) modoMapa(null);
       var texto = input.value.trim();
       clearTimeout(timer);
       if(texto.length < 3){ caja.hidden = true; return; }
@@ -784,7 +916,8 @@ footer p{margin-bottom:7px}
       items.forEach(function(it){
         var b = document.createElement("button");
         b.type = "button";
-        b.innerHTML = "<b></b><span></span>";
+        b.innerHTML = '<b></b><i class="sug-tag ' + (it.exacta ? "exacta" : "calle") + '">' +
+                      (it.exacta ? "Dirección exacta" : "Solo la calle") + '</i><span></span>';
         b.querySelector("b").textContent = it.principal;
         b.querySelector("span").textContent = it.resto;
         b.addEventListener("mousedown", function(ev){
@@ -887,7 +1020,8 @@ footer p{margin-bottom:7px}
   }
 
   function sinTildes(t){
-    return t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    return t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+            .replace(/[-_.,/]/g, " ").replace(/\s+/g, " ").trim();
   }
 
   function montarBuscadorVehiculo(){
@@ -918,11 +1052,14 @@ footer p{margin-bottom:7px}
     }
 
     function buscar(){
-      var t = sinTildes(input.value.trim());
+      var t = sinTildes(input.value);
       if(t.length < 2){ caja.hidden = true; return; }
+      var palabras = t.split(" ");
+      /* todas las palabras escritas deben aparecer, en cualquier orden */
       var hits = CATALOGO.filter(function(v){
-        return sinTildes(v.n).indexOf(t) !== -1 || sinTildes(v.c).indexOf(t) !== -1;
-      }).slice(0, 8);
+        var texto = sinTildes(v.n + " " + v.c);
+        return palabras.every(function(w){ return texto.indexOf(w) !== -1; });
+      }).slice(0, 9);
       pintar(hits);
     }
 
