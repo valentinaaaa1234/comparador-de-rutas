@@ -215,6 +215,7 @@ details.params summary svg{width:18px; height:18px; color:var(--violeta)}
 
 
 
+.pin-mapa{background:none; border:none}
 .od-acciones{display:flex; gap:8px; margin-top:7px; flex-wrap:wrap}
 .mini{font-family:var(--fuente); font-size:12.5px; font-weight:600; color:var(--violeta);
   background:var(--violeta-soft); border:none; border-radius:9px; padding:6px 11px; cursor:pointer;
@@ -657,7 +658,7 @@ footer p{margin-bottom:7px}
     { n:"Kenworth T800",       c:"Tractocamión", r0:34.5, cap:28 }
   ];
 
-  var estado = { origen:null, destino:null, capaA:null, capaB:null, marcas:[], via:"", vehId:"Camión simple (genérico)", modo:null };
+  var estado = { origen:null, destino:null, capaA:null, capaB:null, marcas:[], via:"", vehId:"Camión simple (genérico)", modo:null, marcaO:null, marcaD:null };
   var ultimoVeh = null;
   var mapa = null;
 
@@ -714,10 +715,10 @@ footer p{margin-bottom:7px}
   }
   function limpiarCapas(){
     if(!mapa) return;
-    [estado.capaA, estado.capaB].concat(estado.marcas).forEach(function(c){
+    [estado.capaA, estado.capaB].forEach(function(c){
       if(c){ try{ mapa.removeLayer(c); }catch(e){} }
     });
-    estado.capaA = null; estado.capaB = null; estado.marcas = [];
+    estado.capaA = null; estado.capaB = null;
   }
   function dibujarRuta(geometry, col){
     if(!mapa || !geometry) return null;
@@ -725,11 +726,41 @@ footer p{margin-bottom:7px}
       return L.geoJSON({type:"Feature",geometry:geometry},{style:{color:col,weight:5,opacity:.85}}).addTo(mapa);
     }catch(e){ return null; }
   }
-  function marcar(coord, col, texto){
-    if(!mapa || !coord) return;
+  function iconoPin(color){
+    return L.divIcon({
+      className:"pin-mapa",
+      html:'<svg viewBox="0 0 24 24" width="32" height="32" fill="'+color+'" stroke="#ffffff" stroke-width="1.5">' +
+           '<path d="M12 1.6a8 8 0 0 0-8 8c0 6.2 8 12.8 8 12.8s8-6.6 8-12.8a8 8 0 0 0-8-8z"/>' +
+           '<circle cx="12" cy="9.5" r="3" fill="#ffffff" stroke="none"/></svg>',
+      iconSize:[32,32], iconAnchor:[16,31], tooltipAnchor:[0,-26]
+    });
+  }
+
+  /* marcador permanente de origen o destino: aparece apenas se fija el punto */
+  function pintarPunto(campo){
+    if(!mapa) return;
+    var clave = campo === "origen" ? "marcaO" : "marcaD";
+    if(estado[clave]){ try{ mapa.removeLayer(estado[clave]); }catch(e){} estado[clave] = null; }
+    var pt = estado[campo];
+    if(!pt) return;
+    var color = campo === "origen" ? css("--ruta-a") : css("--ruta-b");
     try{
-      estado.marcas.push(L.circleMarker([coord[1],coord[0]],
-        { radius:7, color:col, weight:3, fillColor:"#fff", fillOpacity:1 }).addTo(mapa).bindTooltip(texto));
+      estado[clave] = L.marker([pt.coord[1], pt.coord[0]], { icon:iconoPin(color), zIndexOffset:500 })
+        .addTo(mapa)
+        .bindTooltip((campo === "origen" ? "Origen: " : "Destino: ") + pt.label, { direction:"top" });
+    }catch(e){}
+  }
+
+  /* encuadra el mapa sobre los puntos ya fijados */
+  function encuadrarPuntos(){
+    if(!mapa) return;
+    var pts = [];
+    if(estado.origen)  pts.push([estado.origen.coord[1],  estado.origen.coord[0]]);
+    if(estado.destino) pts.push([estado.destino.coord[1], estado.destino.coord[0]]);
+    if(!pts.length) return;
+    try{
+      if(pts.length === 1) mapa.setView(pts[0], Math.max(mapa.getZoom(), 14));
+      else mapa.fitBounds(L.latLngBounds(pts).pad(0.3));
     }catch(e){}
   }
 
@@ -755,6 +786,7 @@ footer p{margin-bottom:7px}
     $(campo).value = etiqueta;
     revisarBoton();
     modoMapa(null);
+    pintarPunto(campo);
     /* intenta ponerle nombre al punto, sin bloquear nada si falla */
     fetch("https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1&lat=" +
           lat + "&lon=" + lon, { headers:{ "Accept":"application/json" } })
@@ -768,6 +800,7 @@ footer p{margin-bottom:7px}
         var com = a.city || a.town || a.village || a.county || "";
         estado[campo].label = nom;
         $(campo).value = nom + (com && com !== nom ? ", " + com : "");
+        pintarPunto(campo);
       })
       .catch(function(){});
   }
@@ -897,6 +930,7 @@ footer p{margin-bottom:7px}
     var input = $(inputId), caja = $(sugId), timer = null, pedido = 0;
     input.addEventListener("input", function(){
       estado[campo] = null; revisarBoton();
+      pintarPunto(campo);
       if(estado.modo) modoMapa(null);
       var texto = input.value.trim();
       clearTimeout(timer);
@@ -925,6 +959,8 @@ footer p{margin-bottom:7px}
           input.value = it.principal + (it.resto ? ", " + it.resto : "");
           estado[campo] = { label:it.principal, coord:it.coord };
           caja.hidden = true; revisarBoton();
+          pintarPunto(campo);
+          encuadrarPuntos();
         });
         caja.appendChild(b);
       });
@@ -974,8 +1010,8 @@ footer p{margin-bottom:7px}
           mostrarError("El servicio encontró una sola ruta entre esos puntos. Edita a mano los datos de la ruta B, en Análisis detallado, para comparar.");
         }
 
-        marcar(estado.origen.coord, css("--ruta-a"), estado.origen.label);
-        marcar(estado.destino.coord, css("--ruta-b"), estado.destino.label);
+        pintarPunto("origen");
+        pintarPunto("destino");
         estado.via = estado.origen.label + " → " + estado.destino.label;
 
         var capas = [estado.capaA, estado.capaB].filter(Boolean);
