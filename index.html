@@ -325,7 +325,7 @@ footer p{margin-bottom:7px}
         <span class="sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span>
         <h2>Planificar comparación</h2>
       </div>
-      <p class="sec-sub">Escribe el origen y el destino, elige el vehículo y la carga. Las sugerencias aparecen mientras escribes.</p>
+      <p class="sec-sub">Escribe el origen y el destino; acepta direcciones con calle y número, por ejemplo <i>Balmaceda 1341, La Serena</i>. En vehículo escribe la marca y elige el modelo: el consumo y la capacidad se completan solos.</p>
 
       <div class="dos" style="align-items:start">
         <div class="card">
@@ -334,7 +334,7 @@ footer p{margin-bottom:7px}
               <span class="od-ico o" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span>
               <div class="od-campo">
                 <label for="origen">Origen</label>
-                <input type="text" id="origen" placeholder="Antofagasta" autocomplete="off">
+                <input type="text" id="origen" placeholder="Balmaceda 1341, La Serena" autocomplete="off">
                 <div class="sugerencias" id="sug-origen" hidden></div>
               </div>
             </div>
@@ -342,7 +342,7 @@ footer p{margin-bottom:7px}
               <span class="od-ico d" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V4"></path><path d="M4 5h11l-1.6 3.4L15 12H4"></path></svg></span>
               <div class="od-campo">
                 <label for="destino">Destino</label>
-                <input type="text" id="destino" placeholder="Calama" autocomplete="off">
+                <input type="text" id="destino" placeholder="Av. Angamos 601, Antofagasta" autocomplete="off">
                 <div class="sugerencias" id="sug-destino" hidden></div>
               </div>
             </div>
@@ -350,19 +350,20 @@ footer p{margin-bottom:7px}
 
           <div class="divisor"></div>
 
-          <div style="margin-bottom:18px">
-            <label for="veh">Vehículo</label>
-            <select id="veh"></select>
+          <div style="margin-bottom:16px">
+            <div class="od-campo">
+              <label for="veh">Vehículo</label>
+              <input type="text" id="veh" placeholder="Escribe la marca, por ejemplo Kia" autocomplete="off">
+              <div class="sugerencias" id="sug-veh" hidden></div>
+            </div>
             <span class="hint" id="veh-hint"></span>
           </div>
 
-          <div id="personalizado" hidden style="margin-bottom:18px">
-            <div class="params-grid">
-              <div><label for="pz-r0">Consumo (L/100 km)</label><input type="number" id="pz-r0" min="1" step="0.1" value="9"></div>
-              <div><label for="pz-cap">Capacidad de carga (t)</label><input type="number" id="pz-cap" min="0.1" step="0.1" value="1"></div>
-              <div><label for="pz-comb">Combustible</label>
-                <select id="pz-comb"><option value="diesel">Diésel</option><option value="bencina">Bencina</option></select></div>
-            </div>
+          <div class="params-grid" style="margin-bottom:18px">
+            <div><label for="pz-r0">Consumo (L/100 km)</label><input type="number" id="pz-r0" min="1" step="0.1" value="22"></div>
+            <div><label for="pz-cap">Capacidad de carga (t)</label><input type="number" id="pz-cap" min="0.05" step="0.05" value="12"></div>
+            <div><label for="pz-comb">Combustible</label>
+              <select id="pz-comb"><option value="diesel">Diésel</option><option value="bencina">Bencina</option></select></div>
           </div>
 
           <div>
@@ -500,7 +501,7 @@ footer p{margin-bottom:7px}
           </div>
           <p class="fuente"><b>Factores de emisión.</b> Para diésel, HuellaChile (Ministerio del Medio Ambiente) publica del orden de 2,71 kg CO₂e por litro y DEFRA 2025 publica 2,66 kg CO₂e/L para diésel mineral; se adopta 2,70. Para bencina se adopta 2,31 kg CO₂e/L. Ambos valores deben confirmarse con la tabla de fuentes móviles de HuellaChile.</p>
           <p class="fuente"><b>Precios de combustible.</b> Parámetros volátiles durante 2026. Los valores por defecto son referenciales y deben tomarse del informe semanal de la Comisión Nacional de Energía.</p>
-          <p class="fuente"><b>Catálogo de vehículos.</b> Los consumos del catálogo son valores referenciales por categoría. En la versión final se cargan desde la base de etiquetado de eficiencia energética vehicular del Ministerio de Energía, que publica rendimiento y emisiones por modelo.</p>
+          <p class="fuente"><b>Catálogo de vehículos.</b> Los consumos asociados a cada modelo son valores referenciales y editables. En la versión final se cargan desde la base de etiquetado de eficiencia energética vehicular del Ministerio de Energía, que publica rendimiento y emisiones por modelo.</p>
           <p class="fuente"><b>Peajes.</b> No existe todavía un servicio público que entregue la tarifa de peaje de una ruta. El Portal Único de Tarifas ordenado por el MOP está reglamentado pero aún no opera. Mientras tanto se ingresan a mano; la alternativa es construir una tabla propia con las tarifas publicadas por cada concesionaria.</p>
           <p class="fuente"><b>Costo hora conductor, penalización por carga y factor de velocidad.</b> Supuestos del grupo, pendientes de calibración. El servicio de rutas calcula tiempos de automóvil; el factor de velocidad los ajusta a camión.</p>
         </div>
@@ -542,29 +543,77 @@ footer p{margin-bottom:7px}
     alerta: svg('<path d="M12 3.5l9.5 16.5H2.5z"></path><path d="M12 10v4"></path><path d="M12 17.2h.01"></path>')
   };
 
-  /* catalogo: r0 en L/100 km, cap en toneladas */
-  var GRUPOS = [
-    { grupo:"Autos y camionetas", items:[
-      { id:"a1", nombre:"Auto compacto — bencina",      comb:"bencina", r0:6.5,  cap:0.4 },
-      { id:"a2", nombre:"Auto mediano — bencina",       comb:"bencina", r0:8.0,  cap:0.5 },
-      { id:"a3", nombre:"Auto mediano — diésel",        comb:"diesel",  r0:6.0,  cap:0.5 },
-      { id:"a4", nombre:"SUV — bencina",                comb:"bencina", r0:9.5,  cap:0.6 },
-      { id:"a5", nombre:"SUV — diésel",                 comb:"diesel",  r0:7.5,  cap:0.6 },
-      { id:"a6", nombre:"Camioneta 4x4 — diésel",       comb:"diesel",  r0:10.5, cap:1.0 }
-    ]},
-    { grupo:"Reparto y carga", items:[
-      { id:"c1", nombre:"Furgón de reparto — diésel",   comb:"diesel",  r0:11.5, cap:1.5 },
-      { id:"c2", nombre:"Camión 3/4 — diésel",          comb:"diesel",  r0:14,   cap:5 },
-      { id:"c3", nombre:"Camión simple — diésel",       comb:"diesel",  r0:22,   cap:12 },
-      { id:"c4", nombre:"Camión de dos ejes — diésel",  comb:"diesel",  r0:26,   cap:18 },
-      { id:"c5", nombre:"Tractocamión — diésel",        comb:"diesel",  r0:30,   cap:28 }
-    ]},
-    { grupo:"Otro", items:[
-      { id:"zz", nombre:"Personalizado — ingresar datos", comb:"diesel", r0:9, cap:1, libre:true }
-    ]}
+  /* ------------------------------------------------------------------
+     CATALOGO DE VEHICULOS
+     n = nombre, c = categoria, r0 = consumo L/100 km, cap = carga util en t
+     Los consumos son REFERENCIALES por modelo. Para la entrega final se
+     reemplazan por los datos oficiales de la base de etiquetado de
+     eficiencia energetica vehicular del Ministerio de Energia.
+     ------------------------------------------------------------------ */
+  var CATALOGO = [
+    { n:"Camión simple (genérico)",     c:"Genérico",      r0:22,   cap:12 },
+    { n:"Tractocamión (genérico)",      c:"Genérico",      r0:31,   cap:28 },
+    { n:"Camioneta (genérico)",         c:"Genérico",      r0:8.7,  cap:1.0 },
+    { n:"Furgón de reparto (genérico)", c:"Genérico",      r0:10.5, cap:1.3 },
+    { n:"Auto mediano (genérico)",      c:"Genérico",      r0:7.0,  cap:0.45 },
+
+    { n:"Kia Morning",         c:"Citycar",   r0:5.2, cap:0.35 },
+    { n:"Kia Rio",             c:"Citycar",   r0:5.9, cap:0.40 },
+    { n:"Kia Carens",          c:"Minivan",   r0:7.4, cap:0.50 },
+    { n:"Kia Sportage",        c:"SUV",       r0:7.8, cap:0.60 },
+    { n:"Kia Sorento",         c:"SUV",       r0:8.6, cap:0.70 },
+    { n:"Chevrolet Sail",      c:"Citycar",   r0:6.2, cap:0.40 },
+    { n:"Chevrolet Onix",      c:"Sedán",     r0:6.0, cap:0.40 },
+    { n:"Chevrolet Groove",    c:"SUV",       r0:7.0, cap:0.50 },
+    { n:"Chevrolet Spin",      c:"Minivan",   r0:7.9, cap:0.60 },
+    { n:"Chevrolet N400",      c:"Furgón",    r0:8.2, cap:1.00 },
+    { n:"Chevrolet D-Max",     c:"Camioneta", r0:8.4, cap:1.00 },
+    { n:"Hyundai Accent",      c:"Citycar",   r0:6.0, cap:0.40 },
+    { n:"Hyundai Elantra",     c:"Sedán",     r0:6.4, cap:0.45 },
+    { n:"Hyundai Creta",       c:"SUV",       r0:7.1, cap:0.50 },
+    { n:"Hyundai Tucson",      c:"SUV",       r0:8.0, cap:0.60 },
+    { n:"Hyundai H1",          c:"Furgón",    r0:9.5, cap:1.20 },
+    { n:"Hyundai HD78",        c:"Camión",    r0:16,  cap:4.50 },
+    { n:"Toyota Yaris",        c:"Citycar",   r0:5.8, cap:0.40 },
+    { n:"Toyota Corolla",      c:"Sedán",     r0:6.2, cap:0.45 },
+    { n:"Toyota RAV4",         c:"SUV",       r0:7.2, cap:0.60 },
+    { n:"Toyota Hilux",        c:"Camioneta", r0:8.5, cap:1.00 },
+    { n:"Toyota Hiace",        c:"Furgón",    r0:9.8, cap:1.30 },
+    { n:"Suzuki Swift",        c:"Citycar",   r0:5.4, cap:0.35 },
+    { n:"Suzuki Baleno",       c:"Citycar",   r0:5.6, cap:0.40 },
+    { n:"Suzuki Vitara",       c:"SUV",       r0:6.8, cap:0.50 },
+    { n:"Nissan Versa",        c:"Sedán",     r0:6.3, cap:0.40 },
+    { n:"Nissan Kicks",        c:"SUV",       r0:6.9, cap:0.50 },
+    { n:"Nissan NP300",        c:"Camioneta", r0:8.9, cap:1.10 },
+    { n:"Mitsubishi ASX",      c:"SUV",       r0:7.6, cap:0.50 },
+    { n:"Mitsubishi L200",     c:"Camioneta", r0:8.6, cap:1.00 },
+    { n:"Mazda 2",             c:"Citycar",   r0:5.7, cap:0.40 },
+    { n:"Mazda 3",             c:"Sedán",     r0:6.5, cap:0.45 },
+    { n:"Renault Kwid",        c:"Citycar",   r0:5.0, cap:0.30 },
+    { n:"Renault Kangoo",      c:"Furgón",    r0:6.3, cap:0.80 },
+    { n:"Peugeot 208",         c:"Citycar",   r0:5.6, cap:0.35 },
+    { n:"Peugeot Partner",     c:"Furgón",    r0:6.5, cap:0.80 },
+    { n:"Ford Ranger",         c:"Camioneta", r0:8.8, cap:1.10 },
+    { n:"Ford Transit",        c:"Furgón",    r0:10.2, cap:1.40 },
+    { n:"Volkswagen Amarok",   c:"Camioneta", r0:9.0, cap:1.10 },
+    { n:"Maxus T60",           c:"Camioneta", r0:9.2, cap:1.00 },
+    { n:"Mercedes-Benz Sprinter", c:"Furgón", r0:10.5, cap:1.50 },
+    { n:"JAC Sunray",          c:"Furgón",    r0:10.8, cap:1.50 },
+    { n:"JAC X200",            c:"Camión",    r0:14.5, cap:3.50 },
+    { n:"Foton Aumark",        c:"Camión",    r0:15,  cap:4.50 },
+    { n:"Hino 300",            c:"Camión",    r0:17,  cap:5.50 },
+    { n:"Hino 500",            c:"Camión",    r0:24,  cap:11 },
+    { n:"Mercedes-Benz Accelo",c:"Camión",    r0:18,  cap:6.00 },
+    { n:"Mercedes-Benz Atego", c:"Camión",    r0:25,  cap:12 },
+    { n:"Volvo FL",            c:"Camión",    r0:26,  cap:14 },
+    { n:"Volvo FH",            c:"Tractocamión", r0:32, cap:28 },
+    { n:"Scania R450",         c:"Tractocamión", r0:31, cap:28 },
+    { n:"Mercedes-Benz Actros",c:"Tractocamión", r0:31.5, cap:28 },
+    { n:"Freightliner Cascadia", c:"Tractocamión", r0:33, cap:28 },
+    { n:"International Lonestar", c:"Tractocamión", r0:34, cap:28 }
   ];
 
-  var estado = { origen:null, destino:null, capaA:null, capaB:null, marcas:[], via:"" };
+  var estado = { origen:null, destino:null, capaA:null, capaB:null, marcas:[], via:"", vehId:"Camión simple (genérico)" };
   var ultimoVeh = null;
   var mapa = null;
 
@@ -639,39 +688,73 @@ footer p{margin-bottom:7px}
   function mostrarError(msg){ var e=$("error-api"); e.hidden=false; e.textContent=msg; }
   function limpiarError(){ $("error-api").hidden = true; }
 
-  /* ---------------- geocodificación ---------------- */
-  function geocodificar(texto){
-    var bbox = "-76.0,-56.5,-66.0,-17.0";
-    var urlP = "https://photon.komoot.io/api/?q=" + encodeURIComponent(texto) + "&limit=6&bbox=" + bbox;
-    return fetch(urlP)
-      .then(function(r){ if(!r.ok) throw new Error("photon " + r.status); return r.json(); })
+  /* ---------------- geocodificación ----------------
+     Se consultan Photon y Nominatim en paralelo y se combinan.
+     Photon responde mejor a nombres parciales; Nominatim resuelve
+     mejor las direcciones con calle y número.                      */
+  var BBOX_CL = "-76.0,-56.5,-66.0,-17.0";
+
+  function buscarPhoton(texto){
+    return fetch("https://photon.komoot.io/api/?q=" + encodeURIComponent(texto) + "&limit=7&bbox=" + BBOX_CL)
+      .then(function(r){ if(!r.ok) throw new Error("photon"); return r.json(); })
       .then(function(d){
-        var out = ((d && d.features) || []).map(function(f){
+        return ((d && d.features) || []).map(function(f){
           if(!f.geometry || !f.geometry.coordinates) return null;
-          var p = f.properties || {};
-          var principal = p.name || [p.street, p.housenumber].filter(Boolean).join(" ") || "Lugar";
+          var pr = f.properties || {};
+          var principal;
+          if(pr.street && pr.housenumber) principal = pr.street + " " + pr.housenumber;
+          else principal = pr.name || pr.street || null;
+          if(!principal) return null;
           var resto = [];
-          [p.city, p.county, p.state, p.country].forEach(function(x){
+          [pr.city, pr.district, pr.county, pr.state].forEach(function(x){
             if(x && x !== principal && resto.indexOf(x) === -1) resto.push(x);
           });
           return { principal:principal, resto:resto.join(", "), coord:f.geometry.coordinates };
         }).filter(Boolean);
-        if(!out.length) throw new Error("photon vacio");
-        return out;
-      })
-      .catch(function(){
-        var urlN = "https://nominatim.openstreetmap.org/search?format=jsonv2&countrycodes=cl&limit=6&q=" + encodeURIComponent(texto);
-        return fetch(urlN, { headers:{ "Accept":"application/json" } })
-          .then(function(r){ if(!r.ok) throw new Error("nominatim " + r.status); return r.json(); })
-          .then(function(arr){
-            var out = (arr || []).map(function(x){
-              var partes = String(x.display_name || "").split(",").map(function(s){ return s.trim(); });
-              return { principal: partes.shift() || "Lugar", resto: partes.slice(0,3).join(", "),
-                       coord: [parseFloat(x.lon), parseFloat(x.lat)] };
-            }).filter(function(x){ return isFinite(x.coord[0]) && isFinite(x.coord[1]); });
-            if(!out.length) throw new Error("sin resultados");
-            return out;
+      });
+  }
+
+  function buscarNominatim(texto){
+    return fetch("https://nominatim.openstreetmap.org/search?format=jsonv2&countrycodes=cl&addressdetails=1&limit=7&q=" +
+                 encodeURIComponent(texto), { headers:{ "Accept":"application/json" } })
+      .then(function(r){ if(!r.ok) throw new Error("nominatim"); return r.json(); })
+      .then(function(arr){
+        return (arr || []).map(function(x){
+          var a = x.address || {};
+          var principal;
+          if(a.road && a.house_number) principal = a.road + " " + a.house_number;
+          else if(a.road) principal = a.road;
+          else {
+            var partes = String(x.display_name || "").split(",").map(function(t){ return t.trim(); });
+            principal = partes[0] || "Lugar";
+            if(/^\d+$/.test(principal) && partes[1]) principal = partes[1] + " " + partes[0];
+          }
+          var resto = [];
+          [a.city || a.town || a.village, a.county, a.state].forEach(function(y){
+            if(y && y !== principal && resto.indexOf(y) === -1) resto.push(y);
           });
+          return { principal:principal, resto:resto.join(", "),
+                   coord:[parseFloat(x.lon), parseFloat(x.lat)] };
+        }).filter(function(x){ return isFinite(x.coord[0]) && isFinite(x.coord[1]); });
+      });
+  }
+
+  function geocodificar(texto){
+    var esDireccion = /\d/.test(texto);
+    var vacio = function(){ return []; };
+    return Promise.all([ buscarPhoton(texto).catch(vacio), buscarNominatim(texto).catch(vacio) ])
+      .then(function(res){
+        /* si el texto trae número, las direcciones de Nominatim van primero */
+        var lista = esDireccion ? res[1].concat(res[0]) : res[0].concat(res[1]);
+        var vistos = {}, out = [];
+        lista.forEach(function(it){
+          var clave = it.principal.toLowerCase() + "|" + it.coord[0].toFixed(3) + "," + it.coord[1].toFixed(3);
+          if(vistos[clave]) return;
+          vistos[clave] = true;
+          out.push(it);
+        });
+        if(!out.length) throw new Error("sin resultados");
+        return out.slice(0, 7);
       });
   }
 
@@ -794,14 +877,62 @@ footer p{margin-bottom:7px}
 
   /* ---------------- vehículos ---------------- */
   function vehActual(){
-    var id = $("veh").value, encontrado = null;
-    GRUPOS.forEach(function(g){ g.items.forEach(function(v){ if(v.id === id) encontrado = v; }); });
-    if(!encontrado) encontrado = GRUPOS[1].items[2];
-    if(encontrado.libre){
-      return { id:encontrado.id, nombre:encontrado.nombre, libre:true,
-               comb:$("pz-comb").value, r0:numVal($("pz-r0"),9), cap:numVal($("pz-cap"),1) };
+    return {
+      id:     estado.vehId || "libre",
+      nombre: $("veh").value.trim() || "Vehículo personalizado",
+      comb:   $("pz-comb").value,
+      r0:     numVal($("pz-r0"), 22),
+      cap:    numVal($("pz-cap"), 12)
+    };
+  }
+
+  function sinTildes(t){
+    return t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  }
+
+  function montarBuscadorVehiculo(){
+    var input = $("veh"), caja = $("sug-veh");
+
+    function pintar(items){
+      caja.innerHTML = "";
+      if(!items.length){ caja.hidden = true; return; }
+      items.forEach(function(v){
+        var b = document.createElement("button");
+        b.type = "button";
+        b.innerHTML = "<b></b><span></span>";
+        b.querySelector("b").textContent = v.n;
+        b.querySelector("span").textContent =
+          v.c + " · " + nf(v.r0,1) + " L/100 km · " + nf(v.cap,2) + " t";
+        b.addEventListener("mousedown", function(ev){
+          ev.preventDefault();
+          input.value = v.n;
+          estado.vehId = v.n;
+          $("pz-r0").value  = String(v.r0);
+          $("pz-cap").value = String(v.cap);
+          caja.hidden = true;
+          render();
+        });
+        caja.appendChild(b);
+      });
+      caja.hidden = false;
     }
-    return encontrado;
+
+    function buscar(){
+      var t = sinTildes(input.value.trim());
+      if(t.length < 2){ caja.hidden = true; return; }
+      var hits = CATALOGO.filter(function(v){
+        return sinTildes(v.n).indexOf(t) !== -1 || sinTildes(v.c).indexOf(t) !== -1;
+      }).slice(0, 8);
+      pintar(hits);
+    }
+
+    input.addEventListener("input", function(){
+      estado.vehId = "libre";
+      buscar();
+      render();
+    });
+    input.addEventListener("focus", buscar);
+    input.addEventListener("blur", function(){ setTimeout(function(){ caja.hidden = true; }, 170); });
   }
 
   /* ---------------- cálculo ---------------- */
@@ -818,7 +949,6 @@ footer p{margin-bottom:7px}
 
   function render(){
     var veh = vehActual();
-    $("personalizado").hidden = !veh.libre;
 
     var esDiesel = veh.comb === "diesel";
     var fe     = esDiesel ? numVal($("fe-d"),2.70) : numVal($("fe-b"),2.31);
@@ -844,8 +974,11 @@ footer p{margin-bottom:7px}
     }
     $("carga-out").textContent = nf(carga,dec) + " t";
     $("carga-hint").textContent = "Capacidad " + nf(veh.cap,dec) + " t · consumo base " + nf(veh.r0,1) + " L/100 km";
-    $("veh-hint").textContent = (esDiesel ? "Diésel" : "Bencina") +
-      " · factor " + nf(fe,2) + " kg CO₂e/L · " + clp(precio) + " por litro";
+    $("veh-hint").textContent = (estado.vehId !== "libre"
+        ? "Consumo referencial del modelo, editable. "
+        : "Valores ingresados a mano. ") +
+      (esDiesel ? "Diésel" : "Bencina") + " · factor " + nf(fe,2) +
+      " kg CO₂e/L · " + clp(precio) + " por litro";
 
     var r = veh.r0 + k * carga;
 
@@ -1012,25 +1145,16 @@ footer p{margin-bottom:7px}
   }
 
   /* ---------------- arranque ---------------- */
-  GRUPOS.forEach(function(g){
-    var og = document.createElement("optgroup");
-    og.label = g.grupo;
-    g.items.forEach(function(v){
-      var o = document.createElement("option");
-      o.value = v.id; o.textContent = v.nombre;
-      og.appendChild(o);
-    });
-    $("veh").appendChild(og);
-  });
-  $("veh").value = "c3";
+  $("veh").value = estado.vehId;
 
   ["carga","da","va","pa","db","vb","pb","fe-d","fe-b","pr-d","pr-b","ch","k","fv","we","wc","wt",
    "pz-r0","pz-cap"].forEach(function(id){ $(id).addEventListener("input", render); });
-  ["veh","pz-comb"].forEach(function(id){ $(id).addEventListener("change", render); });
+  $("pz-comb").addEventListener("change", render);
 
   iniciarMapa();
   montarBuscador("origen","sug-origen","origen");
   montarBuscador("destino","sug-destino","destino");
+  montarBuscadorVehiculo();
   render();
 })();
 </script>
