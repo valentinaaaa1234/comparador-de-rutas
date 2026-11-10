@@ -344,7 +344,7 @@ footer p{margin-bottom:7px}
         <span class="sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span>
         <h2>Planificar comparación</h2>
       </div>
-      <p class="sec-sub">Escribe el origen y el destino; acepta direcciones con calle y número, por ejemplo <i>Balmaceda 1341, La Serena</i>. Si la dirección exacta no aparece, usa <i>Fijar en el mapa</i> o pega las coordenadas. Si entre el origen y el destino hay un solo camino, agrega un punto intermedio y la segunda ruta se calcula pasando por ahí. En vehículo escribe la marca y elige el modelo: el consumo y la capacidad se completan solos.</p>
+      <p class="sec-sub">Escribe el origen y el destino; acepta direcciones con calle y número, por ejemplo <i>Balmaceda 1341, La Serena</i>. Si la dirección exacta no aparece, usa <i>Fijar en el mapa</i> o pega las coordenadas. La página busca sola una segunda ruta por otro corredor; el punto intermedio solo se usa si quieres forzar un paso determinado. En vehículo escribe la marca y elige el modelo: el consumo y la capacidad se completan solos.</p>
 
       <div class="dos" style="align-items:start">
         <div class="card">
@@ -366,7 +366,7 @@ footer p{margin-bottom:7px}
             <div class="od-row">
               <span class="od-ico v" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v8M8 12h8"></path></svg></span>
               <div class="od-campo">
-                <label for="via">Punto intermedio <span style="text-transform:none; font-weight:500; color:var(--ink-3)">(opcional, fuerza la segunda ruta)</span></label>
+                <label for="via">Punto intermedio <span style="text-transform:none; font-weight:500; color:var(--ink-3)">(opcional, solo si quieres forzar un paso)</span></label>
                 <input type="text" id="via" placeholder="Tocopilla" autocomplete="off">
                 <div class="sugerencias" id="sug-via" hidden></div>
                 <div class="od-acciones">
@@ -1014,6 +1014,103 @@ footer p{margin-bottom:7px}
     });
   }
 
+  /* ---- busqueda automatica de una segunda ruta ----
+     Si el servicio entrega un solo camino, se generan puntos de desvio a
+     ambos lados del trayecto y se piden rutas que pasen por ellos. Se
+     conserva la que recorra un corredor realmente distinto.            */
+
+  function celdaDe(lon, lat){ return Math.round(lon/0.02) + "_" + Math.round(lat/0.02); }
+
+  function celdasDeRuta(coords){
+    var set = {};
+    for(var i=0;i<coords.length;i++) set[celdaDe(coords[i][0], coords[i][1])] = true;
+    return set;
+  }
+
+  /* fraccion del trayecto B que va por el mismo corredor que A.
+     Se mira la celda y sus vecinas, para que un desvio de un par de
+     kilometros no cuente como corredor distinto.                    */
+  function solapamiento(coordsB, celdasA){
+    var dentro = 0, total = 0;
+    var paso = Math.max(1, Math.floor(coordsB.length / 150));
+    for(var i=0;i<coordsB.length;i+=paso){
+      total++;
+      var cx = Math.round(coordsB[i][0]/0.02), cy = Math.round(coordsB[i][1]/0.02);
+      var cerca = false;
+      for(var a=-1; a<=1 && !cerca; a++){
+        for(var b=-1; b<=1 && !cerca; b++){
+          if(celdasA[(cx+a) + "_" + (cy+b)]) cerca = true;
+        }
+      }
+      if(cerca) dentro++;
+    }
+    return total ? dentro/total : 1;
+  }
+
+  /* puntos de desvio perpendiculares al trayecto, a cada lado */
+  function puntosDeDesvio(coords){
+    var n = coords.length;
+    if(n < 8) return [];
+    var salida = [];
+    [0.5, 0.33].forEach(function(frac){
+      var i = Math.floor(n * frac);
+      var k = Math.max(1, Math.floor(n/20));
+      var a = coords[Math.max(0, i-k)], b = coords[Math.min(n-1, i+k)];
+      var dx = b[0]-a[0], dy = b[1]-a[1];
+      var largo = Math.sqrt(dx*dx + dy*dy) || 1;
+      var px = -dy/largo, py = dx/largo;
+      var lat = coords[i][1];
+      var cosL = Math.cos(lat * Math.PI/180) || 1;
+      [45, 95].forEach(function(km){
+        var dLat = km/111, dLon = km/(111*cosL);
+        [1,-1].forEach(function(signo){
+          salida.push([ coords[i][0] + px*dLon*signo, coords[i][1] + py*dLat*signo ]);
+        });
+      });
+    });
+    return salida;
+  }
+
+  function buscarAlternativa(rutaA, o, d){
+    var coordsA = (rutaA.geometry && rutaA.geometry.coordinates) || [];
+    var desvios = puntosDeDesvio(coordsA);
+    if(!desvios.length) return Promise.resolve(null);
+    var celdasA = celdasDeRuta(coordsA);
+
+    function sirve(r){
+      if(!r || !r.geometry || !r.distance) return false;
+      if(r.distance > rutaA.distance * 1.8) return false;
+      return solapamiento(r.geometry.coordinates, celdasA) < 0.72;
+    }
+
+    /* se prueba de a cuatro desvios, para no cargar el servidor publico
+       mas de lo necesario: si la primera tanda sirve, no se pide mas */
+    function tanda(desde){
+      var grupo = desvios.slice(desde, desde + 4);
+      if(!grupo.length) return Promise.resolve(null);
+      return Promise.all(grupo.map(function(c){
+        return pedirRuta([o, c, d], false)
+          .then(function(rs){ return rs[0]; })
+          .catch(function(){ return null; });
+      })).then(function(res){
+        var buenas = res.filter(sirve);
+        if(buenas.length){
+          buenas.sort(function(x,y){ return x.distance - y.distance; });
+          return buenas[0];
+        }
+        return tanda(desde + 4);
+      });
+    }
+
+    return tanda(0);
+  }
+
+  function estado_buscando(texto){
+    var a = $("mapa-modo");
+    if(texto){ a.hidden = false; a.textContent = texto; }
+    else if(!estado.modo){ a.hidden = true; }
+  }
+
   $("btn-calcular").addEventListener("click", function(){
     limpiarError();
     $("btn-calcular").disabled = true;
@@ -1024,11 +1121,20 @@ footer p{margin-bottom:7px}
         var o = estado.origen.coord, d = estado.destino.coord;
         /* ruta principal, pidiendo varias alternativas */
         return pedirRuta([o, d], true).then(function(rutas){
-          if(!estado.via) return { a:rutas[0], b:rutas[1] || null, viaB:false };
-          /* hay punto intermedio: la ruta B se calcula pasando por el */
-          return pedirRuta([o, estado.via.coord, d], false)
-            .then(function(r2){ return { a:rutas[0], b:r2[0], viaB:true }; })
-            .catch(function(){ return { a:rutas[0], b:rutas[1] || null, viaB:false, falloVia:true }; });
+          /* 1. el usuario fijo un punto intermedio: manda ese */
+          if(estado.via){
+            return pedirRuta([o, estado.via.coord, d], false)
+              .then(function(r2){ return { a:rutas[0], b:r2[0], viaB:true }; })
+              .catch(function(){ return { a:rutas[0], b:rutas[1] || null, viaB:false, falloVia:true }; });
+          }
+          /* 2. el servicio ya entrego una alternativa */
+          if(rutas[1]) return { a:rutas[0], b:rutas[1], viaB:false };
+          /* 3. la buscamos nosotros probando desvios */
+          estado_buscando("Buscando una segunda ruta por otro corredor…");
+          return buscarAlternativa(rutas[0], o, d).then(function(alt){
+            estado_buscando(null);
+            return { a:rutas[0], b:alt, viaB:false, auto:!!alt };
+          });
         });
       })
       .then(function(res){
@@ -1039,7 +1145,8 @@ footer p{margin-bottom:7px}
 
         if(res.b){
           estado.bReal = true;
-          aplicarRuta(res.b, "b", res.viaB ? "Ruta por " + estado.via.label : "Ruta alternativa");
+          aplicarRuta(res.b, "b", res.viaB ? "Ruta por " + estado.via.label
+                                           : (res.auto ? "Ruta alternativa encontrada" : "Ruta alternativa"));
           estado.capaB = dibujarRuta(res.b.geometry, css("--ruta-b"));
           if(res.falloVia){
             mostrarError("No se pudo calcular la ruta por el punto intermedio; se usó la alternativa del servicio.");
@@ -1048,9 +1155,8 @@ footer p{margin-bottom:7px}
           estado.bReal = false;
           $("nom-b").textContent = "Alternativa sin calcular";
           $("th-b").textContent  = "Alternativa sin calcular";
-          mostrarError("El servicio no encontró una segunda ruta entre esos puntos: por ese tramo hay un solo " +
-            "camino razonable. Para comparar dos rutas reales, escribe un punto intermedio por donde deba pasar " +
-            "la alternativa (por ejemplo Tocopilla, si quieres la ruta costera) y vuelve a calcular.");
+          mostrarError("Se probaron varios desvíos y no apareció un segundo corredor razonable: por ese tramo " +
+            "hay un solo camino. Si conoces una alternativa, escríbela en Punto intermedio y vuelve a calcular.");
         }
 
         pintarPunto("origen");
@@ -1072,6 +1178,7 @@ footer p{margin-bottom:7px}
         else if(m === "sinruta") txt = "No se encontró una ruta por carretera entre esos puntos.";
         else if(m.indexOf("http") === 0) txt = "El servidor de rutas respondió con error (" + m + "). Intenta de nuevo en unos segundos.";
         else txt = "No se pudo conectar con el servidor de rutas (" + m + "). Puedes escribir distancia y velocidad a mano.";
+        estado_buscando(null);
         mostrarError(txt);
       })
       .then(function(){ revisarBoton(); });
