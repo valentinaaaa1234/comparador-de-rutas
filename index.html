@@ -107,6 +107,7 @@ input[type=range]{width:100%; accent-color:var(--violeta)}
 .od-ico svg{width:17px; height:17px}
 .od-ico.o{background:var(--ruta-a-soft); color:var(--ruta-a)}
 .od-ico.d{background:var(--ruta-b-soft); color:var(--ruta-b)}
+.od-ico.v{background:var(--soft-2); color:var(--ink-2)}
 .od-campo{position:relative; min-width:0}
 .sugerencias{position:absolute; top:calc(100% + 6px); left:0; right:0; z-index:1200; background:var(--card);
   border-radius:14px; max-height:260px; overflow-y:auto; box-shadow:0 10px 28px rgba(22,24,48,.16); padding:6px}
@@ -343,7 +344,7 @@ footer p{margin-bottom:7px}
         <span class="sec-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span>
         <h2>Planificar comparación</h2>
       </div>
-      <p class="sec-sub">Escribe el origen y el destino; acepta direcciones con calle y número, por ejemplo <i>Balmaceda 1341, La Serena</i>. Si la dirección exacta no aparece, usa <i>Fijar en el mapa</i> o pega las coordenadas. En vehículo escribe la marca y elige el modelo: el consumo y la capacidad se completan solos.</p>
+      <p class="sec-sub">Escribe el origen y el destino; acepta direcciones con calle y número, por ejemplo <i>Balmaceda 1341, La Serena</i>. Si la dirección exacta no aparece, usa <i>Fijar en el mapa</i> o pega las coordenadas. Si entre el origen y el destino hay un solo camino, agrega un punto intermedio y la segunda ruta se calcula pasando por ahí. En vehículo escribe la marca y elige el modelo: el consumo y la capacidad se completan solos.</p>
 
       <div class="dos" style="align-items:start">
         <div class="card">
@@ -357,6 +358,20 @@ footer p{margin-bottom:7px}
                 <div class="od-acciones">
                   <button class="mini" id="pin-origen" type="button" aria-pressed="false">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>
+                    Fijar en el mapa
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="od-row">
+              <span class="od-ico v" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v8M8 12h8"></path></svg></span>
+              <div class="od-campo">
+                <label for="via">Punto intermedio <span style="text-transform:none; font-weight:500; color:var(--ink-3)">(opcional, fuerza la segunda ruta)</span></label>
+                <input type="text" id="via" placeholder="Tocopilla" autocomplete="off">
+                <div class="sugerencias" id="sug-via" hidden></div>
+                <div class="od-acciones">
+                  <button class="mini" id="pin-via" type="button" aria-pressed="false">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v8M8 12h8"></path></svg>
                     Fijar en el mapa
                   </button>
                 </div>
@@ -658,7 +673,7 @@ footer p{margin-bottom:7px}
     { n:"Kenworth T800",       c:"Tractocamión", r0:34.5, cap:28 }
   ];
 
-  var estado = { origen:null, destino:null, capaA:null, capaB:null, marcas:[], via:"", vehId:"Camión simple (genérico)", modo:null, marcaO:null, marcaD:null };
+  var estado = { origen:null, destino:null, capaA:null, capaB:null, marcas:[], trayecto:"", via:null, bReal:true, vehId:"Camión simple (genérico)", modo:null, marcaO:null, marcaD:null, marcaV:null };
   var ultimoVeh = null;
   var mapa = null;
 
@@ -737,17 +752,21 @@ footer p{margin-bottom:7px}
   }
 
   /* marcador permanente de origen o destino: aparece apenas se fija el punto */
+  var CLAVE_MARCA = { origen:"marcaO", destino:"marcaD", via:"marcaV" };
+  var COLOR_PUNTO = { origen:"--ruta-a", destino:"--ruta-b", via:"--ink-2" };
+  var NOMBRE_PUNTO = { origen:"Origen: ", destino:"Destino: ", via:"Paso por: " };
+
   function pintarPunto(campo){
     if(!mapa) return;
-    var clave = campo === "origen" ? "marcaO" : "marcaD";
+    var clave = CLAVE_MARCA[campo];
     if(estado[clave]){ try{ mapa.removeLayer(estado[clave]); }catch(e){} estado[clave] = null; }
     var pt = estado[campo];
     if(!pt) return;
-    var color = campo === "origen" ? css("--ruta-a") : css("--ruta-b");
+    var color = css(COLOR_PUNTO[campo]);
     try{
       estado[clave] = L.marker([pt.coord[1], pt.coord[0]], { icon:iconoPin(color), zIndexOffset:500 })
         .addTo(mapa)
-        .bindTooltip((campo === "origen" ? "Origen: " : "Destino: ") + pt.label, { direction:"top" });
+        .bindTooltip(NOMBRE_PUNTO[campo] + pt.label, { direction:"top" });
     }catch(e){}
   }
 
@@ -756,6 +775,7 @@ footer p{margin-bottom:7px}
     if(!mapa) return;
     var pts = [];
     if(estado.origen)  pts.push([estado.origen.coord[1],  estado.origen.coord[0]]);
+    if(estado.via)     pts.push([estado.via.coord[1],     estado.via.coord[0]]);
     if(estado.destino) pts.push([estado.destino.coord[1], estado.destino.coord[0]]);
     if(!pts.length) return;
     try{
@@ -767,12 +787,14 @@ footer p{margin-bottom:7px}
   /* ---- fijar origen o destino haciendo clic en el mapa ---- */
   function modoMapa(campo){
     estado.modo = campo;
-    $("pin-origen").setAttribute("aria-pressed", String(campo === "origen"));
-    $("pin-destino").setAttribute("aria-pressed", String(campo === "destino"));
+    ["origen","destino","via"].forEach(function(c){
+      $("pin-" + c).setAttribute("aria-pressed", String(campo === c));
+    });
     var aviso = $("mapa-modo");
     if(campo){
       aviso.hidden = false;
-      aviso.textContent = "Haz clic en el mapa para fijar el " + campo + ".";
+      aviso.textContent = "Haz clic en el mapa para fijar el " +
+        (campo === "via" ? "punto intermedio" : campo) + ".";
       $("mapa").classList.add("eligiendo");
     } else {
       aviso.hidden = true;
@@ -805,11 +827,10 @@ footer p{margin-bottom:7px}
       .catch(function(){});
   }
 
-  $("pin-origen").addEventListener("click", function(){
-    modoMapa(estado.modo === "origen" ? null : "origen");
-  });
-  $("pin-destino").addEventListener("click", function(){
-    modoMapa(estado.modo === "destino" ? null : "destino");
+  ["origen","destino","via"].forEach(function(campo){
+    $("pin-" + campo).addEventListener("click", function(){
+      modoMapa(estado.modo === campo ? null : campo);
+    });
   });
 
   function mostrarError(msg){ var e=$("error-api"); e.hidden=false; e.textContent=msg; }
@@ -979,6 +1000,20 @@ footer p{margin-bottom:7px}
     });
   }
 
+  function pedirRuta(puntos, conAlternativas){
+    var tramo = puntos.map(function(c){ return c[0] + "," + c[1]; }).join(";");
+    var url = OSRM + tramo + "?overview=full&geometries=geojson" +
+              (conAlternativas ? "&alternatives=3" : "");
+    return fetch(url).then(function(r){
+      if(r.status === 429) throw new Error("cuota");
+      if(!r.ok) throw new Error("http" + r.status);
+      return r.json();
+    }).then(function(d){
+      if(!d || d.code !== "Ok" || !d.routes || !d.routes.length) throw new Error("sinruta");
+      return d.routes;
+    });
+  }
+
   $("btn-calcular").addEventListener("click", function(){
     limpiarError();
     $("btn-calcular").disabled = true;
@@ -987,32 +1022,42 @@ footer p{margin-bottom:7px}
       .catch(function(){ throw new Error("geo"); })
       .then(function(){
         var o = estado.origen.coord, d = estado.destino.coord;
-        return fetch(OSRM + o[0]+","+o[1]+";"+d[0]+","+d[1] + "?alternatives=true&overview=full&geometries=geojson")
-          .then(function(r){
-            if(r.status === 429) throw new Error("cuota");
-            if(!r.ok) throw new Error("http" + r.status);
-            return r.json();
-          });
+        /* ruta principal, pidiendo varias alternativas */
+        return pedirRuta([o, d], true).then(function(rutas){
+          if(!estado.via) return { a:rutas[0], b:rutas[1] || null, viaB:false };
+          /* hay punto intermedio: la ruta B se calcula pasando por el */
+          return pedirRuta([o, estado.via.coord, d], false)
+            .then(function(r2){ return { a:rutas[0], b:r2[0], viaB:true }; })
+            .catch(function(){ return { a:rutas[0], b:rutas[1] || null, viaB:false, falloVia:true }; });
+        });
       })
-      .then(function(data){
-        if(!data || data.code !== "Ok" || !data.routes || !data.routes.length) throw new Error("sinruta");
+      .then(function(res){
         limpiarCapas();
 
-        aplicarRuta(data.routes[0], "a", "Ruta principal");
-        estado.capaA = dibujarRuta(data.routes[0].geometry, css("--ruta-a"));
+        aplicarRuta(res.a, "a", "Ruta principal");
+        estado.capaA = dibujarRuta(res.a.geometry, css("--ruta-a"));
 
-        if(data.routes.length > 1){
-          aplicarRuta(data.routes[1], "b", "Ruta alternativa");
-          estado.capaB = dibujarRuta(data.routes[1].geometry, css("--ruta-b"));
+        if(res.b){
+          estado.bReal = true;
+          aplicarRuta(res.b, "b", res.viaB ? "Ruta por " + estado.via.label : "Ruta alternativa");
+          estado.capaB = dibujarRuta(res.b.geometry, css("--ruta-b"));
+          if(res.falloVia){
+            mostrarError("No se pudo calcular la ruta por el punto intermedio; se usó la alternativa del servicio.");
+          }
         } else {
-          $("nom-b").textContent = "Alternativa manual";
-          $("th-b").textContent  = "Alternativa manual";
-          mostrarError("El servicio encontró una sola ruta entre esos puntos. Edita a mano los datos de la ruta B, en Análisis detallado, para comparar.");
+          estado.bReal = false;
+          $("nom-b").textContent = "Alternativa sin calcular";
+          $("th-b").textContent  = "Alternativa sin calcular";
+          mostrarError("El servicio no encontró una segunda ruta entre esos puntos: por ese tramo hay un solo " +
+            "camino razonable. Para comparar dos rutas reales, escribe un punto intermedio por donde deba pasar " +
+            "la alternativa (por ejemplo Tocopilla, si quieres la ruta costera) y vuelve a calcular.");
         }
 
         pintarPunto("origen");
         pintarPunto("destino");
-        estado.via = estado.origen.label + " → " + estado.destino.label;
+        pintarPunto("via");
+        estado.trayecto = estado.origen.label + " → " +
+          (estado.via && res.viaB ? estado.via.label + " → " : "") + estado.destino.label;
 
         var capas = [estado.capaA, estado.capaB].filter(Boolean);
         if(mapa && capas.length){
@@ -1024,7 +1069,7 @@ footer p{margin-bottom:7px}
         var m = err.message || "", txt;
         if(m === "geo") txt = "No se pudo encontrar el origen o el destino. Prueba con un nombre más simple, por ejemplo solo la ciudad.";
         else if(m === "cuota") txt = "El servidor de rutas está saturado. Espera un minuto y vuelve a intentar.";
-        else if(m === "sinruta") txt = "No se encontró una ruta por carretera entre esos dos puntos.";
+        else if(m === "sinruta") txt = "No se encontró una ruta por carretera entre esos puntos.";
         else if(m.indexOf("http") === 0) txt = "El servidor de rutas respondió con error (" + m + "). Intenta de nuevo en unos segundos.";
         else txt = "No se pudo conectar con el servidor de rutas (" + m + "). Puedes escribir distancia y velocidad a mano.";
         mostrarError(txt);
@@ -1272,7 +1317,8 @@ footer p{margin-bottom:7px}
     $("card-a").classList.toggle("rec", gana === "A");
     $("card-b").classList.toggle("rec", gana === "B");
     $("em-a").textContent = "Alternativa A" + (gana === "A" ? " · Recomendada" : "");
-    $("em-b").textContent = "Alternativa B" + (gana === "B" ? " · Recomendada" : "");
+    $("em-b").textContent = "Alternativa B" + (gana === "B" ? " · Recomendada" : "") +
+                            (estado.bReal ? "" : " · dato ingresado a mano");
 
     /* marcar la ganadora en el mapa */
     if(estado.capaA){ try{ estado.capaA.setStyle({ weight: gana==="A"?8:4, opacity: gana==="A"?.95:.4 }); if(gana==="A") estado.capaA.bringToFront(); }catch(e){} }
@@ -1287,7 +1333,7 @@ footer p{margin-bottom:7px}
 
     /* hero */
     $("hero-ruta").textContent = nomGan;
-    $("hero-via").textContent  = estado.via;
+    $("hero-via").textContent  = estado.trayecto;
     $("hero-txt").textContent  = frase;
     $("hero-stats").innerHTML =
       '<div class="hstat"><span class="hstat-lab">'+ICO.hoja+'CO₂e evitado</span><span class="hstat-val">'+nf(emisMenos,1)+' kg</span></div>' +
@@ -1315,6 +1361,14 @@ footer p{margin-bottom:7px}
       v.className = "veredicto ok"; vico.innerHTML = ICO.ok;
       vex.hidden = true; haviso.hidden = true;
     }
+
+    /* si la ruta B no la entregó el servicio, decirlo antes que nada */
+    if(!estado.bReal){
+      haviso.hidden = false;
+      haviso.textContent = "Atención: el servicio entregó una sola ruta, así que los datos de la ruta B " +
+        "los escribiste tú y esta comparación depende de ellos. Para comparar dos rutas reales, agrega un " +
+        "punto intermedio por donde deba pasar la alternativa.";
+    }
   }
 
   /* ---------------- arranque ---------------- */
@@ -1327,6 +1381,7 @@ footer p{margin-bottom:7px}
   iniciarMapa();
   montarBuscador("origen","sug-origen","origen");
   montarBuscador("destino","sug-destino","destino");
+  montarBuscador("via","sug-via","via");
   montarBuscadorVehiculo();
   render();
 })();
